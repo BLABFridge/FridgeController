@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 class ReaderClass extends Thread{
-	
+
 	public static final String fifoName = "/var/run/RFID_FIFO";
 	private BufferedReader fifoReader = null;
 	private String tagBuffer;
@@ -15,22 +15,23 @@ class ReaderClass extends Thread{
 	public ReaderClass(){
 	}
 
-	public BufferedReader makeBufferedReader(BufferedReader r){
+	public BufferedReader makeBufferedReader(){
+		BufferedReader r = null;
 		try{
 			r = new BufferedReader(new FileReader(fifoName));
 		} catch(IOException e){
-			System.out.println("Error opening BufferedReader");
+			System.out.println("Error opening BufferedReader : " + e);
 		}
 		return r;
 	}
 
 	public void run(){ //this is the "main" function, where everything takes place. in the actual main function, that thread is just waiting on FIFO input
-		fifoReader = makeBufferedReader(fifoReader);
+		BufferedReader fifoReader = makeBufferedReader();
 		String buf = null;
 		while(true){
 			try{
 				buf = fifoReader.readLine();
-				fifoReader = makeBufferedReader(fifoReader);
+//				fifoReader = makeBufferedReader(fifoReader);
 			} catch (IOException e){
 				//////OH NO BAD THINGS AAAAAAAHHHH
 			}
@@ -38,11 +39,11 @@ class ReaderClass extends Thread{
 		}
 	}
 
-	// public synchronized void 
+	// public synchronized void
 
 	public static void main(String[] args) {
 		System.out.println("Java server running");
-		
+
 
 		Thread fridgeServerReader = new Thread(new ReaderClass());
 		fridgeServerReader.start();

@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 #define SPORT_NAME "/dev/ttyAMA0"
+#define RFID_DATA_LENGTH 8
 
 int set_interface_attributes(int filedescriptor, int speed){
 	struct termios tty;
@@ -49,7 +50,7 @@ int set_interface_attributes(int filedescriptor, int speed){
 
 int main(int argc, char const *argv[])
 {
-				
+
 	char *serialPortName = SPORT_NAME;
 
 	int sport_fd = open (serialPortName, O_RDWR | O_NOCTTY | O_SYNC);
@@ -61,11 +62,26 @@ int main(int argc, char const *argv[])
 	char *fifoName = "/var/run/RFID_FIFO"; //this needs to be the same in the java program
 
 	mkfifo(fifoName, 0666);
-	int fifo_fd = open(fifoName, O_WRONLY);
+	int fifo_fd;
+	printf("trying to open fifo\n");
+	fifo_fd = open(fifoName, O_WRONLY);
+	if (fifo_fd !=0){
+		printf("error opening FIFO\n");
+	}
 
 	//Do stuff with the fifo:
 	//write(fifo_fd, "test", sizeof("test"));
+	printf("Serial port setup, waiting on tag read\n");
+	char buf[RFID_DATA_LENGTH];
+	memset(buf, 0xFF, sizeof(buf));
+	int n = read(sport_fd,buf,sizeof(buf));
+	int i;
+	for (i = 0; i < RFID_DATA_LENGTH; ++i){
+		printf("%x", buf[i]);
+	}
+	printf("\n");
 
+	write(fifo_fd, buf, sizeof(buf));
 
 	close(fifo_fd);
 	unlink(fifoName);
