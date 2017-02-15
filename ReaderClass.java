@@ -27,15 +27,22 @@ class ReaderClass extends Thread{
 
 	public void run(){ //this is the "main" function, where everything takes place. in the actual main function, that thread is just waiting on FIFO input
 		BufferedReader fifoReader = makeBufferedReader();
+		try{
+			fifoReader.mark(10); //mark it, allow 10 characters to be read while preserving the mark, this must be >8 but other than that it shouldn't matter
+		}catch(IOException e){
+			return; //even more bad things			
+		}
 		String buf = null;
 		while(true){
 			try{
 				buf = fifoReader.readLine();
 //				fifoReader = makeBufferedReader(fifoReader);
 			} catch (IOException e){
+				return;
 				//////OH NO BAD THINGS AAAAAAAHHHH
 			}
 			System.out.println(buf);
+			fifoReader = makeBufferedReader();//make a new reader, this is the only way I can figure out how to clear it so it blocks on the next read
 		}
 	}
 
