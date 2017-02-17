@@ -4,8 +4,11 @@ import java.util.LinkedList;
 
 class ExpiryChecker implements Runnable {
 
-	public ExpiryChecker(){
-	}
+	LinkedList db;
+
+	public ExpiryChecker(LinkedList db){
+		this.db = db;
+	}	
 
 	public void run(){
 		while(true){
@@ -14,6 +17,7 @@ class ExpiryChecker implements Runnable {
 			} catch(InterruptedException e){
 				//might do something here, if the sleep is interrupted
 			}
+			System.out.println(System.currentTimeMillis() + " - ExpiryChecker is checking for expired items");
 			//check through the database
 		}
 	}

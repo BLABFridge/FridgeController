@@ -25,7 +25,7 @@ class ReaderClass extends Thread{
 		try{
 			r = new BufferedReader(new FileReader(fifoName));
 		} catch(IOException e){
-			System.out.println("Error opening BufferedReader : " + e);
+			System.out.println("Error opening BufferedReader");
 		}
 		return r;
 	}
@@ -38,11 +38,13 @@ class ReaderClass extends Thread{
 		// }catch(IOException e){
 		// 	return; //even more bad things			
 		// }
+		char[] tagCodeCharArray = new char[8];
 		String tagCode = null;
 
 		while(true){
 			try{
-				tagCode = fifoReader.readLine();
+				fifoReader.read(tagCodeCharArray, 0, tagCodeCharArray.length);
+				tagCode = new String(tagCodeCharArray);
 				if (System.currentTimeMillis() - timeLastAdded > 300000){ //it's been more than 5 minutes since the last time something was added
 					addingMode = false;	//no longer in adding mode
 				}
@@ -52,20 +54,26 @@ class ReaderClass extends Thread{
 				//////OH NO BAD THINGS AAAAAAAHHHH
 			}
 
+			// tagCodeCharArray = tagCode.getBytes();
+
 			FoodItem iToAdd = null;
 			int index = db.indexOf(tagCode);
 				
 			//either scenario creates an iToAdd
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already
+				System.out.println("Item " + tagCodeCharArray + " not found locally, fetching from remote database");
 				iToAdd = getItemFromRemoteDatabase(tagCode); //it's not already in the fridge, we have to fetch the item from the database	
 				addingMode = true;
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
+				System.out.print("Item found in local database - ");
 				if(addingMode){
+					System.out.println("in grocery mode, adding a duplicate");
 					Object t = db.get(index);
 					if (t instanceof FoodItem){
 						iToAdd = (FoodItem) t;
 					}
 				} else{
+					System.out.println("not in grocery mode, removing item from fridge");
 					db.remove(index);
 				}
 			}
@@ -91,6 +99,7 @@ class ReaderClass extends Thread{
 
 		Thread fridgeServerReader = new Thread(new ReaderClass(database));
 		fridgeServerReader.start();
+		Thread expiryChecker = new Thread(new ExpiryChecker(database));
 	}
 
 }

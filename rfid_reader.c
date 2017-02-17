@@ -63,25 +63,29 @@ int main(int argc, char const *argv[])
 
 	mkfifo(fifoName, 0666);
 	int fifo_fd;
-	printf("trying to open fifo\n");
-	fifo_fd = open(fifoName, O_WRONLY);
-	if (fifo_fd !=0){
-		printf("error opening FIFO\n");
-	}
+		printf("trying to open fifo\n");
+		fifo_fd = open(fifoName, O_WRONLY);
+		if (fifo_fd !=0){
+			printf("error opening FIFO\n");
+		}
+		printf("Serial port setup, waiting on tag read\n");
 
 	//Do stuff with the fifo:
 	//write(fifo_fd, "test", sizeof("test"));
-	printf("Serial port setup, waiting on tag read\n");
-	char buf[RFID_DATA_LENGTH];
-	memset(buf, 0xFF, sizeof(buf));
-	int n = read(sport_fd,buf,sizeof(buf));
-	int i;
-	for (i = 0; i < RFID_DATA_LENGTH; ++i){
-		printf("%x", buf[i]);
-	}
-	printf("\n");
+	int j;
+	for (j = 0; j < 10; ++j)
+	{		
+		char buf[RFID_DATA_LENGTH];
+		memset(buf, 0xFF, sizeof(buf));
+		int n = read(sport_fd,buf,sizeof(buf));
+		int i;
+		for (i = 0; i < RFID_DATA_LENGTH; ++i){
+			printf("%x", buf[i]);
+		}
+		printf("\n");
 
-	write(fifo_fd, buf, sizeof(buf));
+		write(fifo_fd, buf, sizeof(buf));
+	}
 
 	close(fifo_fd);
 	unlink(fifoName);
