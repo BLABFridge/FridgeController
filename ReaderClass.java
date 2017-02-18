@@ -12,10 +12,14 @@ import java.io.FileReader;
 import java.util.LinkedList;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 class ReaderClass extends Thread{
 
 	public static final String fifoName = "/var/run/RFID_FIFO";
+	public static final String remoteDatabaseInetAddressString = "192.168.0.111"; //set this appropriately
+
+	private InetAddress remoteDatabaseInetAddress;
 	private BufferedReader fifoReader = null;
 	private String tagBuffer;
 	private boolean addingMode = false;
@@ -25,7 +29,8 @@ class ReaderClass extends Thread{
 
 	public ReaderClass(LinkedList d){
 		db = d;
-		databaseRequestSocket = new DatagramSocket(1077); //bind to port 1077 CHECKFIX, this is the port we use to make requests to the database server
+		databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
+		remoteDatabaseInetAddress = InetAddress.getByName(remoteDatabaseInetAddressString);
 	}
 
 	public BufferedReader makeBufferedReader(){
@@ -104,7 +109,9 @@ class ReaderClass extends Thread{
 		byte[] byteArray = new byte[100];
 		byteArray[0] = '0'; //opcode 0 for 'RequestFooditem'
 		byteArray[1] = 0;
-		DatagramPacket requestPacket = new DatagramPacket(); //CHECKFIX the constructor call//this is where UDP stuff goes
+		byte[] tagCodeAsBytes = tagCode.getBytes();
+		
+		DatagramPacket requestPacket = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, 1077); //CHECKFIX the constructor call//this is where UDP stuff goes
 		return null; 
 	}
 
