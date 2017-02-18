@@ -27,6 +27,19 @@ class FoodItem{
 		//do not copy expiry information, renewExpiryDate() MUST be called
 	}
 
+	public static FoodItem getFoodItemFromByteArray(String tagCode, byte[] bytes){
+		int stringBytesLength = 0;
+		for (; bytes[stringBytesLength + 2] != 0; ++stringBytesLength); //loop until we find a null, to get the length of the stringBytes array. We start at 2 because we have to ignore the first two bytes
+		byte[] stringBytes = new byte[stringBytesLength];
+		System.arraycopy(bytes, 2, stringBytes, 0, stringBytesLength);
+		int lifetimeBytesLength = 0;
+		for (; bytes[lifetimeBytesLength + stringBytesLength + 2] != 0; ++lifetimeBytesLength); //get the length of the lifetime string
+		byte[] lifetimeBytes = new byte[lifetimeBytesLength];
+		System.arraycopy(bytes, stringBytesLength + 3, lifetimeBytes, 0, lifetimeBytesLength);
+		int lifetime = Integer.parseInt(new String(lifetimeBytes));
+		return new FoodItem(tagCode, new String(stringBytes), lifetime);
+	}
+
 	public int expiresInDays(){
 		return (new ComparableDate().daysUntil(expiryDate));
 	}

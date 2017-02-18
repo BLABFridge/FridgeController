@@ -13,11 +13,15 @@ import java.util.LinkedList;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 class ReaderClass extends Thread{
 
+	public static final int datagramLength = 50;
+
 	public static final String fifoName = "/var/run/RFID_FIFO";
-	public static final String remoteDatabaseInetAddressString = "192.168.0.111"; //set this appropriately
+	public static final String remoteDatabaseInetAddressString = "127.0.0.1"; //set this appropriately
 
 	private InetAddress remoteDatabaseInetAddress;
 	private BufferedReader fifoReader = null;
@@ -29,8 +33,17 @@ class ReaderClass extends Thread{
 
 	public ReaderClass(LinkedList d){
 		db = d;
-		databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
-		remoteDatabaseInetAddress = InetAddress.getByName(remoteDatabaseInetAddressString);
+		try{
+			databaseRequestSocket = new DatagramSocket(1112); //no port specified, we are always sending to the database first, so the database can learn our port
+			databaseRequestSocket.setSoTimeout(20000); //the database has 20 seconds to respond to a request
+		} catch(SocketException e){
+			System.out.println("Error creating datagram socket");
+		}
+		try{
+			remoteDatabaseInetAddress = InetAddress.getByName(remoteDatabaseInetAddressString);
+		} catch(UnknownHostException e){
+			System.out.println("No host " + remoteDatabaseInetAddressString);
+		}
 	}
 
 	public BufferedReader makeBufferedReader(){
@@ -91,9 +104,7 @@ class ReaderClass extends Thread{
 				}
 			}
 
-			if (iToAdd == null){
-				System.err.println("Tag does not match a valid item in our databases.");
-			} else{
+			if (iToAdd != null){
 
 				iToAdd.renewExpiryDate(); //update the expiry date of the new item, this must be done on creation of a new object
 				db.add(iToAdd);
@@ -106,13 +117,47 @@ class ReaderClass extends Thread{
 	}
 
 	public FoodItem getItemFromRemoteDatabase(String tagCode){
-		byte[] byteArray = new byte[100];
+		
+		//create the byte array
+		byte[] byteArray = new byte[datagramLength];
 		byteArray[0] = '0'; //opcode 0 for 'RequestFooditem'
 		byteArray[1] = 0;
 		byte[] tagCodeAsBytes = tagCode.getBytes();
-		
-		DatagramPacket requestPacket = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, 1077); //CHECKFIX the constructor call//this is where UDP stuff goes
-		return null; 
+		System.arraycopy(tagCodeAsBytes, 0, byteArray, 2, tagCodeAsBytes.length);
+		//fill the rest of the packet with null bytes CHECKFIX
+
+		//put the byte array into a packet destined for port 1077 on the database
+		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, 1077);
+
+		//try to send the packet
+		try{
+			databaseRequestSocket.send(p);
+		} catch(IOException e){
+			System.out.println("DatagramSocket error while attempting to send packet");
+		}
+
+		//wait for the database to respond
+		try{
+			databaseRequestSocket.receive(p); //we don't need p anymore, we can reuse it
+		} catch(IOException e){
+			System.out.println("Error receiving from database");
+		}
+
+		//get the byte array out of the packet
+		byteArray = p.getData();
+
+		if (byteArray[0] == '2'){
+			//The database does not have the food item, at some point, we may make a request to the android app, for now, give up and return null
+			System.out.println("Database does not have this tagCode");
+			return null;
+		} else if(byteArray[0] == '1') { //the database responded correctly
+			System.out.println("Database response received, processing"); //DEBUG/verbose/log?
+			System.out.println("Database responded with " + new String(byteArray)); //DEBUG
+			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);	
+		} else { //the database responded incorrectly
+			System.out.println("The database responded incorrectly to a FoodItem request");
+			return null;
+		}
 	}
 
 	public static void main(String[] args) {
