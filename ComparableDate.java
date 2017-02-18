@@ -7,18 +7,17 @@ class ComparableDate extends java.util.Date {
 	}
 
 	public ComparableDate(int daysFromNow){
-		long secondsFromNow = (System.getCurrentTimeMillis() /1000) +(daysFromNow * SECONDS_PER_DAY);
-		super(secondsFromNow);
+		super((System.currentTimeMillis() /1000) +(daysFromNow * SECONDS_PER_DAY));
 	}
 
 	public int daysUntil(ComparableDate date){
 		long millis = millisUntil(date);
-		return (millis/(1000 * SECONDS_PER_DAY));
+		return ((int) millis/(1000 * SECONDS_PER_DAY));
 	}
 
 	public int hoursUntil(ComparableDate date){
 		long millis = millisUntil(date);
-		return ((millis*24)/(1000*SECONDS_PER_DAY));
+		return ((int) (millis*24)/(1000*SECONDS_PER_DAY));
 
 	}
 
