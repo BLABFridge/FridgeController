@@ -2,10 +2,16 @@
 addingMode is there to allow multiple items to be added into the fridge, duplicate scans are ignored 
 */
 
+//This class contains debug messages, each debug line/section contains a DEBUG comment to ease searching for them
+
+//OFFLINE EDITS - look for CHECKFIX in comments to fix possible unknown calls
+
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.LinkedList;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
 class ReaderClass extends Thread{
 
@@ -15,9 +21,11 @@ class ReaderClass extends Thread{
 	private boolean addingMode = false;
 	private long timeLastAdded;
 	private LinkedList db;
+	private DatagramSocket databaseRequestSocket;
 
 	public ReaderClass(LinkedList d){
 		db = d;
+		databaseRequestSocket = new DatagramSocket(1077); //bind to port 1077 CHECKFIX, this is the port we use to make requests to the database server
 	}
 
 	public BufferedReader makeBufferedReader(){
@@ -30,7 +38,7 @@ class ReaderClass extends Thread{
 		return r;
 	}
 
-	public void run(){ //this is the "main" function, where everything takes place. in the actual main function, that thread is just waiting on FIFO input
+	public void run(){ //run method that listens to the FIFO, manages 'adding mode' aka 'grocery mode' (see top of file for details), and adds/removes things from the local database
 		timeLastAdded = System.currentTimeMillis();
 
 		BufferedReader fifoReader = makeBufferedReader();
@@ -78,10 +86,14 @@ class ReaderClass extends Thread{
 				}
 			}
 
-			iToAdd.renewExpiryDate(); //update the expiry date of the new item, this must be done on creation of a new object
-			db.add(iToAdd);
-			timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode			
+			if (iToAdd == null){
+				System.err.println("Tag does not match a valid item in our databases.");
+			} else{
 
+				iToAdd.renewExpiryDate(); //update the expiry date of the new item, this must be done on creation of a new object
+				db.add(iToAdd);
+				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode			
+			}
 
 			System.out.println(tagCode);
 			fifoReader = makeBufferedReader();//make a new reader, this is the only way I can figure out how to clear it so it blocks on the next read
@@ -89,7 +101,11 @@ class ReaderClass extends Thread{
 	}
 
 	public FoodItem getItemFromRemoteDatabase(String tagCode){
-		return null; //this is where UDP stuff goes
+		byte[] byteArray = new byte[100];
+		byteArray[0] = '0'; //opcode 0 for 'RequestFooditem'
+		byteArray[1] = 0;
+		DatagramPacket requestPacket = new DatagramPacket(); //CHECKFIX the constructor call//this is where UDP stuff goes
+		return null; 
 	}
 
 	public static void main(String[] args) {

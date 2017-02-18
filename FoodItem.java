@@ -1,3 +1,7 @@
+/*
+On creation of a food item, renewExpiryDate() must be called, otherwise expiryDate will be undefined, the constructors do not define it
+*/
+
 class FoodItem{
 
 	private String itemName; 
@@ -17,9 +21,10 @@ class FoodItem{
 	}
 
 	public FoodItem(FoodItem anotherFoodItem){
-		this.itemName = anotherFoodItem.itemName;
-		this.tagCode = anotherFoodItem.tagCode;
+		this.itemName = new String(anotherFoodItem.itemName);
+		this.tagCode = new String(anotherFoodItem.tagCode);
 		this.lifetime = anotherFoodItem.lifetime;
+		//do not copy expiry information, renewExpiryDate() MUST be called
 	}
 
 	public int expiresInDays(){
