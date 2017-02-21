@@ -15,6 +15,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.net.SocketTimeoutException;
 
 class ReaderClass extends Thread{
 
@@ -33,7 +34,7 @@ class ReaderClass extends Thread{
 
 	public ReaderClass(LinkedList d){
 		db = d;
-		try{
+		try{ //DEBUG port is 1112
 			databaseRequestSocket = new DatagramSocket(1112); //no port specified, we are always sending to the database first, so the database can learn our port
 			databaseRequestSocket.setSoTimeout(20000); //the database has 20 seconds to respond to a request
 		} catch(SocketException e){
@@ -93,22 +94,24 @@ class ReaderClass extends Thread{
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
 				System.out.print("Item found in local database - ");
 				if(addingMode){
-					System.out.println("in grocery mode, adding a duplicate");
+					System.out.println("In grocery mode, adding a duplicate");
 					Object t = db.get(index);
 					if (t instanceof FoodItem){
 						iToAdd = (FoodItem) t;
 					}
 				} else{
-					System.out.println("not in grocery mode, removing item from fridge");
+					System.out.println("Not in grocery mode, removing item from fridge");
 					db.remove(index);
 				}
 			}
 
-			if (iToAdd != null){
-
+			if (iToAdd != null){ //if it's null, we didn't find it or we removed it from the database instead
 				iToAdd.renewExpiryDate(); //update the expiry date of the new item, this must be done on creation of a new object
 				db.add(iToAdd);
-				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode			
+				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode
+				System.out.println("Added foodItem to database : " + foodItem);
+			} else{
+				// System.out.println("Fetching item failed");	
 			}
 
 			System.out.println(tagCode);
@@ -139,8 +142,12 @@ class ReaderClass extends Thread{
 		//wait for the database to respond
 		try{
 			databaseRequestSocket.receive(p); //we don't need p anymore, we can reuse it
+		} catch(SocketTimeoutException e){
+			System.out.println("The database did not respond in 20 seconds");
+			return null;
 		} catch(IOException e){
 			System.out.println("Error receiving from database");
+			return null;
 		}
 
 		//get the byte array out of the packet
@@ -153,7 +160,7 @@ class ReaderClass extends Thread{
 		} else if(byteArray[0] == '1') { //the database responded correctly
 			System.out.println("Database response received, processing"); //DEBUG/verbose/log?
 			System.out.println("Database responded with " + new String(byteArray)); //DEBUG
-			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);	
+			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);
 		} else { //the database responded incorrectly
 			System.out.println("The database responded incorrectly to a FoodItem request");
 			return null;

@@ -1,8 +1,11 @@
 /*
 On creation of a food item, renewExpiryDate() must be called, otherwise expiryDate will be undefined, the constructors do not define it
 */
+import java.util.Arrays;
 
 class FoodItem{
+
+	private static final String matchRegex = "_";
 
 	private String itemName; 
 	private String tagCode;
@@ -28,24 +31,32 @@ class FoodItem{
 	}
 
 	public static FoodItem getFoodItemFromByteArray(String tagCode, byte[] bytes){
-		int stringBytesLength = 0;
-		for (; bytes[stringBytesLength + 2] != 0; ++stringBytesLength); //loop until we find a null, to get the length of the stringBytes array. We start at 2 because we have to ignore the first two bytes
-		byte[] stringBytes = new byte[stringBytesLength];
-		System.arraycopy(bytes, 2, stringBytes, 0, stringBytesLength);
-		int lifetimeBytesLength = 0;
-		for (; bytes[lifetimeBytesLength + stringBytesLength + 2] != 0; ++lifetimeBytesLength); //get the length of the lifetime string
-		byte[] lifetimeBytes = new byte[lifetimeBytesLength];
-		System.arraycopy(bytes, stringBytesLength + 3, lifetimeBytes, 0, lifetimeBytesLength);
-		int lifetime = Integer.parseInt(new String(lifetimeBytes));
-		return new FoodItem(tagCode, new String(stringBytes), lifetime);
+	// 	System.out.println("Input string : " + bytes.toString()); //DEBUG
+	// 	int stringBytesLength = 0;
+	// 	for (; bytes[stringBytesLength + 2] != '/'; ++stringBytesLength); //loop until we find a null, to get the length of the stringBytes array. We start at 2 because we have to ignore the first two bytes
+	// 	System.out.println("stringBytesLength : " + stringBytesLength); //DEBUG
+	// 	byte[] stringBytes = Arrays.copyOf(bytes, stringBytesLength);
+	// 	System.out.println("stringBytes : " + stringBytes.toString()); //DEBUG
+	// 	int lifetimeBytesLength = 0;
+	// 	for (; bytes[lifetimeBytesLength + stringBytesLength + 2] != '/'; ++lifetimeBytesLength); //get the length of the lifetime string
+	// 	System.out.println("lifetimeBytesLength : " + lifetimeBytesLength); //DEBUG
+	// 	byte[] lifetimeBytes = new byte[lifetimeBytesLength];
+	// 	System.arraycopy(bytes, stringBytesLength + 3, lifetimeBytes, 0, lifetimeBytesLength);
+	// 	System.out.println("lifetimeBytes : " + lifetimeBytes.toString()); //DEBUG
+	// 	int lifetime = Integer.parseInt(new String(lifetimeBytes));
+		String splittableString = new String(bytes);
+		// System.out.println("Splitting " + t);
+		String[] strings = splittableString.split(matchRegex);
+
+		return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2]));
 	}
 
 	public int expiresInDays(){
-		return (new ComparableDate().daysUntil(expiryDate));
+		return (expiryDate.daysUntil());
 	}
 
 	public int expiresInHours(){
-		return (new ComparableDate().hoursUntil(expiryDate));
+		return (expiryDate.hoursUntil());
 	}
 
 	public void renewExpiryDate(){
@@ -60,6 +71,11 @@ class FoodItem{
 			return (this.tagCode.equals((String) o));
 		}
 		return false;
+	}
+
+	public String toString(){
+		String retString = "[Name : " + itemName + ", tagCode : " + tagCode + ", expires in : " + expiryDate.daysUntil() + " days]";
+		return retString;
 	}
 
 }
