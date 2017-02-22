@@ -32,7 +32,7 @@ Note - [0] is the delimeter used between items in packets. Currently, '?' is bei
 ## Opcodes for interfacing with Android App
 
 
-5 - Notify User : Create a new notification containing the given string, used when food items are going to expire
+5 - Notify User : Create a new notification containing the given string, used when food items are going to expire. The app acknowledges with a blank 5 packet
 #####Format
 	5[0][String notificationString][0][padding to 100 bytes]
 

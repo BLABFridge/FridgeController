@@ -23,7 +23,7 @@ class ReaderClass extends Thread{
 
 	public static final String fifoName = "/var/run/RFID_FIFO";
 	public static final String remoteDatabaseInetAddressString = "127.0.0.1"; //set this appropriately
-	public static final int remoteDatabasePort = 1077
+	public static final int remoteDatabasePort = 1077;
 
 	private InetAddress remoteDatabaseInetAddress;
 	private BufferedReader fifoReader = null;

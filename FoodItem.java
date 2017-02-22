@@ -11,10 +11,11 @@ class FoodItem{
 	private String tagCode;
 	private ComparableDate expiryDate;
 	private int lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
+	private float[] warningTimes; //warningTimes will be the length of warningExpiryToLifetimeRatio.length
 
-	public boolean warnedFirstTime = false;
-	public boolean warnedSecondTime = false;
-	public boolean warnedFinalTime = false;
+	public static final float[] warningExpiryToLifetimeRatio = {1/1, 1/7,1/14,1/21};
+	
+
 
 	public FoodItem(String tagCode, String name){
 		this(tagCode, name, 1); //default lifetime of 1 day
@@ -25,12 +26,20 @@ class FoodItem{
 		expiryDate = null;
 		itemName = name;
 		this.lifetime = lifetime;
+		warningTimes = new float[warningExpiryToLifetimeRatio.length];
+		for (int i = 0; i < warningExpiryToLifetimeRatio.length; ++i) {
+			warningTimes[i] = lifetime * warningExpiryToLifetimeRatio[i];
+		}
 	}
 
 	public FoodItem(FoodItem anotherFoodItem){
 		this.itemName = new String(anotherFoodItem.itemName);
 		this.tagCode = new String(anotherFoodItem.tagCode);
 		this.lifetime = anotherFoodItem.lifetime;
+		this.warningTimes = new float[anotherFoodItem.warningTimes.length];
+		for (int i = 0; i < warningTimes.length; ++i) {
+			this.warningTimes[i] = anotherFoodItem.warningTimes[i];
+		}
 		//do not copy expiry information, renewExpiryDate() MUST be called
 	}
 
@@ -55,8 +64,19 @@ class FoodItem{
 		return (expiresInDays()/lifetime);
 	}
 
-	public void renewExpiryDate(){
+	public void renewExpiryDate(){ //this is considered a secondary constructor, the only reason it isn't in the constructor is so that expiryDate can be renewed at the 'time of entry'
 		expiryDate = new ComparableDate(lifetime); //this should be called when the item is put in the fridge.
+
+	}
+
+	public boolean needsWarning(){
+		for (int i = 0; i < warningTimes.length; ++i) { //assumes warning times are generated in order, 1st is the soonest, nth is the closest to expiry date
+			if(expiresInHours() <= warningTimes[i]){
+				warningTimes[i] = 0;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean equals(Object o){ //this equals method does not compare all fields, it returns true if the names match, ignoring expiry dates
