@@ -10,14 +10,14 @@ class ComparableDate extends java.util.Date {
 		super((System.currentTimeMillis() /1000) +(daysFromNow * SECONDS_PER_DAY));
 	}
 
-	public int daysUntil(){
+	public float daysUntil(){
 		long millis = millisUntil();
-		return ((int) millis/(1000 * SECONDS_PER_DAY));
+		return ((float) millis/(1000 * SECONDS_PER_DAY));
 	}
 
-	public int hoursUntil(){
+	public float hoursUntil(){
 		long millis = millisUntil();
-		return ((int) (millis*24)/(1000*SECONDS_PER_DAY));
+		return ((float) (millis*24)/(1000*SECONDS_PER_DAY));
 
 	}
 

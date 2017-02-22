@@ -4,7 +4,11 @@ import java.util.LinkedList;
 
 class ExpiryChecker implements Runnable {
 
-	LinkedList db;
+	LinkedList<FoodItem> db;
+
+	public static final float firstWarningExpiryToLifetimeRatio = 1/7;
+	public static final float secondWarningExpiryToLifetimeRatio = 1/14;
+	public static final int finalWarningHoursLeft = 8;
 
 	public ExpiryChecker(LinkedList db){
 		this.db = db;
@@ -19,6 +23,35 @@ class ExpiryChecker implements Runnable {
 			}
 			System.out.println(System.currentTimeMillis() + " - ExpiryChecker is checking for expired items");
 			//check through the database
+			for(FoodItem checkItem : db){
+				float expiryDate = 0;
+				boolean expiryDateIsInHours = false;
+				if (checkItem.expiresInHours() <= finalWarningHoursLeft && !checkItem.warnedFinalTime){
+					expiryDate = checkItem.expiresInHours();
+					expiryDateIsInHours = true;
+					checkItem.warnedFinalTime = true;
+				} else if(checkItem.getExpiryToLifetimeRatio() <= secondWarningExpiryToLifetimeRatio && !checkItem.warnedSecondTime){
+					expiryDate = checkItem.expiresInDays();
+					if (expiryDate < 1) {
+						expiryDate = checkItem.expiresInHours();
+						expiryDateIsInHours = true;
+					}
+					checkItem.warnedSecondTime = true;
+				} else if (checkItem.getExpiryToLifetimeRatio() < firstWarningExpiryToLifetimeRatio && !checkItem.warnedFirstTime) {
+					expiryDate = checkItem.expiresInDays();
+					if (expiryDate < 1) {
+						expiryDate = checkItem.expiresInHours();
+						expiryDateIsInHours = true;
+					}
+					checkItem.warnedFirstTime = true;
+				}
+
+
+				if (expiryDate != 0){
+					String warningString = checkItem.getName() + " expires in " + expiryDate + (expiryDateIsInHours ? " hours." : " days.");
+					System.out.println(warningString);
+				}
+			}
 		}
 	}
 
