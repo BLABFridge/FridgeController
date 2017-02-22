@@ -28,7 +28,7 @@ class FoodItem{
 		this.lifetime = lifetime;
 		warningTimes = new float[warningExpiryToLifetimeRatio.length];
 		for (int i = 0; i < warningExpiryToLifetimeRatio.length; ++i) {
-			warningTimes[i] = lifetime * warningExpiryToLifetimeRatio[i];
+			warningTimes[i] = 24 * lifetime * warningExpiryToLifetimeRatio[i];
 		}
 	}
 

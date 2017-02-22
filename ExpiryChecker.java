@@ -65,14 +65,13 @@ class ExpiryChecker implements Runnable {
 	public void run(){
 		while(true){
 			try{
-				Thread.sleep(300000); //sleep for 5 minutes
+				Thread.sleep(3000); //sleep for 5 minutes
 			} catch(InterruptedException e){
 				//might do something here, if the sleep is interrupted
 			}
 			System.out.println(System.currentTimeMillis() + " - ExpiryChecker is checking for expiring items");
 			//check through the database
 			for(FoodItem checkItem : db){
-				System.out.println(checkItem.getName() + " expires in " + checkItem.expiresInDays() + " days.");
 				float expiryDate = 0;
 				boolean expiryDateIsInHours = false;
 				if (checkItem.needsWarning()){
