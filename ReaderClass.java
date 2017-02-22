@@ -19,10 +19,11 @@ import java.net.SocketTimeoutException;
 
 class ReaderClass extends Thread{
 
-	public static final int datagramLength = 50;
+	public static final int datagramLength = 100;
 
 	public static final String fifoName = "/var/run/RFID_FIFO";
 	public static final String remoteDatabaseInetAddressString = "127.0.0.1"; //set this appropriately
+	public static final int remoteDatabasePort = 1077
 
 	private InetAddress remoteDatabaseInetAddress;
 	private BufferedReader fifoReader = null;
@@ -35,7 +36,7 @@ class ReaderClass extends Thread{
 	public ReaderClass(LinkedList d){
 		db = d;
 		try{ //DEBUG port is 1112
-			databaseRequestSocket = new DatagramSocket(1112); //no port specified, we are always sending to the database first, so the database can learn our port
+			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
 			databaseRequestSocket.setSoTimeout(20000); //the database has 20 seconds to respond to a request
 		} catch(SocketException e){
 			System.out.println("Error creating datagram socket");
@@ -109,7 +110,7 @@ class ReaderClass extends Thread{
 				iToAdd.renewExpiryDate(); //update the expiry date of the new item, this must be done on creation of a new object
 				db.add(iToAdd);
 				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode
-				System.out.println("Added foodItem to database : " + foodItem);
+				System.out.println("Added foodItem to database : " + iToAdd);
 			} else{
 				// System.out.println("Fetching item failed");	
 			}
@@ -130,7 +131,7 @@ class ReaderClass extends Thread{
 		//fill the rest of the packet with null bytes CHECKFIX
 
 		//put the byte array into a packet destined for port 1077 on the database
-		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, 1077);
+		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, remoteDatabasePort);
 
 		//try to send the packet
 		try{
@@ -172,9 +173,15 @@ class ReaderClass extends Thread{
 
 		LinkedList<FoodItem> database = new LinkedList<FoodItem>();
 
+		FoodItem f = new FoodItem("testCode", "testItem", 8);
+		f.renewExpiryDate();
+		database.add(f);
+
+
 		Thread fridgeServerReader = new Thread(new ReaderClass(database));
 		fridgeServerReader.start();
 		Thread expiryChecker = new Thread(new ExpiryChecker(database));
+		expiryChecker.start();
 	}
 
 }
