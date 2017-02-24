@@ -37,18 +37,24 @@ class ReaderClass extends Thread{
 	private LinkedList db;
 	private DatagramSocket databaseRequestSocket;
 
+
+	public static void println(String s){
+		System.out.println(new Date() + " " + s);
+	}
+
+
 	public ReaderClass(LinkedList d){
 		db = d;
 		try{ //DEBUG port is 1112
 			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
 			databaseRequestSocket.setSoTimeout(20000); //the database has 20 seconds to respond to a request
 		} catch(SocketException e){
-			System.out.println( new Date() + " Error creating datagram socket");
+			println( " Error creating datagram socket");
 		}
 		try{
 			remoteDatabaseInetAddress = InetAddress.getByName(remoteDatabaseInetAddressString);
 		} catch(UnknownHostException e){
-			System.out.println(new Date() + " No host " + remoteDatabaseInetAddressString);
+			println(" No host " + remoteDatabaseInetAddressString);
 		}
 	}
 
@@ -57,13 +63,13 @@ class ReaderClass extends Thread{
 		try{
 			r = new BufferedReader(new FileReader(fifoName));
 		} catch(IOException e){
-			System.out.println(new Date() + " Error opening BufferedReader");
+			println(" Error opening BufferedReader");
 		}
 		return r;
 	}
 
 	public void run(){ //run method that listens to the FIFO, manages 'adding mode' aka 'grocery mode' (see top of file for details), and adds/removes things from the local database
-		System.out.println(new Date() + " FIFO reader is alive");
+		println(" FIFO reader is alive");
 		timeLastAdded = System.currentTimeMillis();
 
 		BufferedReader fifoReader = makeBufferedReader();
@@ -94,19 +100,19 @@ class ReaderClass extends Thread{
 				
 			//either scenario creates an iToAdd
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already
-				System.out.println(new Date() + " Item " + tagCodeCharArray + " not found locally, fetching from remote database");
+				println(" Item " + tagCodeCharArray + " not found locally, fetching from remote database");
 				iToAdd = getItemFromRemoteDatabase(tagCode); //it's not already in the fridge, we have to fetch the item from the database	
 				addingMode = true;
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
-				System.out.print(new Date() + " Item found in local database - ");
+				println(" Item found in local database : ");
 				if(addingMode){
-					System.out.println(new Date() + " In grocery mode, adding a duplicate");
+					println(" In grocery mode, adding a duplicate");
 					Object t = db.get(index);
 					if (t instanceof FoodItem){
 						iToAdd = (FoodItem) t;
 					}
 				} else{
-					System.out.println(new Date() + " Not in grocery mode, removing item from fridge");
+					println(" Not in grocery mode, removing item from fridge");
 					db.remove(index);
 				}
 			}
@@ -115,12 +121,12 @@ class ReaderClass extends Thread{
 				iToAdd.renewExpiryDate(); //update the expiry date of the new item, this must be done on creation of a new object
 				db.add(iToAdd);
 				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode
-				System.out.println(new Date() + " Added foodItem to database : " + iToAdd);
+				println(" Added foodItem to database : " + iToAdd);
 			} else{
-				// System.out.println("Fetching item failed");	
+				// println("Fetching item failed");	
 			}
 
-			System.out.println(tagCode);
+			println(tagCode);
 			fifoReader = makeBufferedReader();//make a new reader, this is the only way I can figure out how to clear it so it blocks on the next read
 		}
 	}
@@ -142,17 +148,17 @@ class ReaderClass extends Thread{
 		try{
 			databaseRequestSocket.send(p);
 		} catch(IOException e){
-			System.out.println(new Date() + " DatagramSocket error while attempting to send packet");
+			println(" DatagramSocket error while attempting to send packet");
 		}
 
 		//wait for the database to respond
 		try{
 			databaseRequestSocket.receive(p); //we don't need p anymore, we can reuse it
 		} catch(SocketTimeoutException e){
-			System.out.println(new Date() + " The database did not respond in 20 seconds");
+			println(" The database did not respond in 20 seconds");
 			return null;
 		} catch(IOException e){
-			System.out.println(new Date() + " Error receiving from database");
+			println(" Error receiving from database");
 			return null;
 		}
 
@@ -161,14 +167,14 @@ class ReaderClass extends Thread{
 
 		if (byteArray[0] == '2'){
 			//The database does not have the food item, at some point, we may make a request to the android app, for now, give up and return null
-			System.out.println(new Date() + " Database does not have this tagCode");
+			println(" Database does not have this tagCode");
 			return null;
 		} else if(byteArray[0] == '1') { //the database responded correctly
-			System.out.println(new Date() + " Database response received, processing"); //DEBUG/verbose/log?
-			System.out.println(new Date() + " Database responded with " + new String(byteArray)); //DEBUG
+			println(" Database response received, processing"); //DEBUG/verbose/log?
+			println(" Database responded with " + new String(byteArray)); //DEBUG
 			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);
 		} else { //the database responded incorrectly
-			System.out.println(new Date() + " The database responded incorrectly to a FoodItem request");
+			println(" The database responded incorrectly to a FoodItem request");
 			return null;
 		}
 	}
@@ -181,12 +187,12 @@ class ReaderClass extends Thread{
 		try{
 			oStream = new PrintStream(logFile); //true for appending
 		} catch (FileNotFoundException e){
-			System.out.println("File Not found");
+			println("File Not found");
 		}
 
 		System.setOut(oStream);
 
-		System.out.println(new Date() + " Java server running");
+		println(" Java server running");
 
 		LinkedList<FoodItem> database = new LinkedList<FoodItem>();
 

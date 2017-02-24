@@ -25,7 +25,7 @@ class ExpiryChecker implements Runnable {
 			socket = new DatagramSocket();
 			socket.setSoTimeout(20000);
 		} catch(SocketException e){
-			System.out.print(new Date() + " Error setting up the android communication socket");
+			ReaderClass.println(" Error setting up the android communication socket");
 		}
 
 	}	
@@ -43,19 +43,19 @@ class ExpiryChecker implements Runnable {
 		try{
 			p = new DatagramPacket(byteArray, byteArray.length, InetAddress.getByName(androidInetAddressString), androidPort);
 		} catch(UnknownHostException e){
-			System.out.println(new Date() + " No host by name " + androidInetAddressString);
+			ReaderClass.println(" No host by name " + androidInetAddressString);
 		}
 
 		try {
 			socket.send(p);
 		} catch(IOException e){
-			System.out.println(new Date() + " Error sending packet to android app");
+			ReaderClass.println(" Error sending packet to android app");
 		}
 
 		try{
 			socket.receive(p); //reuse the same packet, we don't need it after it's sent
 		}catch (SocketTimeoutException e){
-			System.out.println(new Date() + " The android did not respond");
+			ReaderClass.println(" The android did not respond");
 			return false;
 		}catch(IOException e){
 			return false;
@@ -64,14 +64,14 @@ class ExpiryChecker implements Runnable {
 	}
 
 	public void run(){
-		System.out.println(new Date() + " ExpiryChecker is alive");
+		ReaderClass.println(" ExpiryChecker is alive");
 		while(true){
 			try{
 				Thread.sleep(3000); //sleep for 5 minutes
 			} catch(InterruptedException e){
 				//might do something here, if the sleep is interrupted
 			}
-			System.out.println(new Date() + " ExpiryChecker is checking for expiring items");
+			ReaderClass.println(" ExpiryChecker is checking for expiring items");
 			//check through the database
 			for(FoodItem checkItem : db){
 				float expiryDate = 0;
@@ -86,7 +86,7 @@ class ExpiryChecker implements Runnable {
 
 				if (expiryDate != 0){
 					String warningString = checkItem.getName() + " expires in " + expiryDate + (expiryDateIsInHours ? " hours." : " days.");
-					System.out.println(new Date() + " sending to android : " + warningString);
+					ReaderClass.println(" sending to android : " + warningString);
 				}
 			}
 		}

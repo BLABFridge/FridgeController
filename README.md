@@ -3,6 +3,8 @@
 The fridge controller does not have any static ports, all ports are dynamically allocated at runtime. This means that both the android phone and the database must have static ports
 Currently, the fridge assumes that the Database exists on port 1077, and the android app exists on port 1078
 
+There is a listener on port 1111, for any packets that may be sent to the fridge unprompted. Currently, nothing requres this so all packets are ignored
+
 
 ## Opcodes for interfacing with Database
 Note - [0] is the delimeter used between items in packets. Currently, '?' is being used for testing
@@ -42,4 +44,4 @@ Note - [0] is the delimeter used between items in packets. Currently, '?' is bei
 
 7 - FoodItem Returned : Generally in response to a 6 packet, and the same format as a 1 packet 
 	7[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
-	
+
