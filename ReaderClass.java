@@ -83,9 +83,11 @@ class ReaderClass extends Thread{
 		while(true){
 			try{
 				fifoReader.read(tagCodeCharArray, 0, tagCodeCharArray.length);
+				println("Input from RFID_FIFO");
 				tagCode = new String(tagCodeCharArray);
-				if (System.currentTimeMillis() - timeLastAdded > 300000){ //it's been more than 5 minutes since the last time something was added
+				if (System.currentTimeMillis() - timeLastAdded > 30000){ //it's been more than 30 since the last time something was added
 					addingMode = false;	//no longer in adding mode
+					println("Leaving adding mode");
 				}
 //				fifoReader = makeBufferedReader(fifoReader);
 			} catch (IOException e){
@@ -103,6 +105,7 @@ class ReaderClass extends Thread{
 				println(" Item " + tagCodeCharArray + " not found locally, fetching from remote database");
 				iToAdd = getItemFromRemoteDatabase(tagCode); //it's not already in the fridge, we have to fetch the item from the database	
 				addingMode = true;
+				println("Switching to adding mode");
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
 				println(" Item found in local database : ");
 				if(addingMode){
@@ -123,7 +126,7 @@ class ReaderClass extends Thread{
 				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode
 				println(" Added foodItem to database : " + iToAdd);
 			} else{
-				// println("Fetching item failed");	
+				println("Obtaining an iToAdd failed, no item is being added to the fridge");	
 			}
 
 			println(tagCode);
