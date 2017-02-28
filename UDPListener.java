@@ -33,7 +33,7 @@ class UDPListener extends Thread {
 
 		switch(buf[0]) {
 			case 8 : //currently the only case
-				String[] strings = new String(buf).split(FoodItem.matchRegex);
+				String[] strings = new String(buf).split(FoodItem.matchRegexOpcodeDelimiter);
 				if (strings.length > 2){
 					reader.enterAddingMode(Integer.parseInt(strings[1])); //if there's more than 2 items (opcode, number, padding), add the second (the number) as a timeout
 				} else {

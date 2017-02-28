@@ -2,18 +2,19 @@
 On creation of a food item, renewExpiryDate() must be called, otherwise expiryDate will be undefined, the constructors do not define it
 */
 import java.util.Arrays;
+import java.util.ArrayList;
 
 class FoodItem{
 
-	public static final String matchRegex = "?";
+	public static final String matchRegexOpcodeDelimiter = "?";
 
 	private String itemName; 
 	private String tagCode;
 	private ComparableDate expiryDate;
-	private int lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
-	private float[] warningTimes; //warningTimes will be the length of warningExpiryToLifetimeRatio.length
+	private float lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
+	private ArrayList<Float> warningTimes = new ArrayList(); //warningTimes will be the length of warningExpiryToLifetimeRatio.length
 
-	public static final float[] warningExpiryToLifetimeRatio = {1/1, 1/7,1/14,1/21};
+	public static final float[] warningExpiryToLifetimeRatio = {1, (float)0.5, (float)0.14, (float)0.07, (float).047};
 	
 
 
@@ -21,14 +22,13 @@ class FoodItem{
 		this(tagCode, name, 1); //default lifetime of 1 day
 	}
 
-	public FoodItem(String tagCode, String name, int lifetime){
+	public FoodItem(String tagCode, String name, float lifetime){
 		this.tagCode = tagCode;
 		expiryDate = null;
 		itemName = name;
 		this.lifetime = lifetime;
-		warningTimes = new float[warningExpiryToLifetimeRatio.length];
 		for (int i = 0; i < warningExpiryToLifetimeRatio.length; ++i) {
-			warningTimes[i] = 24 * lifetime * warningExpiryToLifetimeRatio[i];
+			warningTimes.add(24 * lifetime * warningExpiryToLifetimeRatio[i]);
 		}
 	}
 
@@ -36,10 +36,7 @@ class FoodItem{
 		this.itemName = new String(anotherFoodItem.itemName);
 		this.tagCode = new String(anotherFoodItem.tagCode);
 		this.lifetime = anotherFoodItem.lifetime;
-		this.warningTimes = new float[anotherFoodItem.warningTimes.length];
-		for (int i = 0; i < warningTimes.length; ++i) {
-			this.warningTimes[i] = anotherFoodItem.warningTimes[i];
-		}
+		this.warningTimes = new ArrayList<Float>(anotherFoodItem.warningTimes);
 		//do not copy expiry information, renewExpiryDate() MUST be called
 	}
 
@@ -47,7 +44,7 @@ class FoodItem{
 
 		String splittableString = new String(bytes);
 		// System.out.println("Splitting " + t);
-		String[] strings = splittableString.split(matchRegex);
+		String[] strings = splittableString.split(matchRegexOpcodeDelimiter);
 
 		return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2])); //using packet format, the first is the opcode (ignored), second is name, third is lifetime
 	}
@@ -70,9 +67,10 @@ class FoodItem{
 	}
 
 	public boolean needsWarning(){
-		for (int i = 0; i < warningTimes.length; ++i) { //assumes warning times are generated in order, 1st is the soonest, nth is the closest to expiry date
-			if(expiresInHours() <= warningTimes[i]){
-				warningTimes[i] = 0;
+		//assumes warning times are generated in order, 1st is the soonest, nth is the closest to expiry date
+		if(warningTimes.size() > 0){
+			if(expiresInHours() <= warningTimes.get(0)){
+				warningTimes.remove(0);
 				return true;
 			}
 		}

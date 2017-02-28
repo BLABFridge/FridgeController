@@ -210,7 +210,7 @@ class ReaderClass extends Thread{
 
 		LinkedList<FoodItem> database = new LinkedList<FoodItem>();
 
-		FoodItem f = new FoodItem("testCode", "testItem", 8);
+		FoodItem f = new FoodItem("testCode", "testItem",(float) 0.001);
 		f.renewExpiryDate();
 		database.add(f);
 

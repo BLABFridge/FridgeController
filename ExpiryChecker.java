@@ -28,13 +28,13 @@ class ExpiryChecker implements Runnable {
 			ReaderClass.println("Error setting up the android communication socket");
 		}
 
-	}	
+	}
 
 	public boolean sendNotificationToAndroidApp(String notificationString){
 		// create the byte array
 		byte[] byteArray = new byte[ReaderClass.datagramLength];
 		byteArray[0] = '5'; //opcode 5 for 'Notify User'
-		byteArray[1] = 0;
+		byteArray[1] = FoodItem.matchRegexOpcodeDelimiter.getBytes()[0];
 		byte[] notifStringAsBytes = notificationString.getBytes();
 		System.arraycopy(notifStringAsBytes, 0, byteArray, 2, notifStringAsBytes.length);
 		
@@ -87,6 +87,7 @@ class ExpiryChecker implements Runnable {
 				if (expiryDate != 0){
 					String warningString = checkItem.getName() + " expires in " + expiryDate + (expiryDateIsInHours ? " hours." : " days.");
 					ReaderClass.println("sending to android : " + warningString);
+					sendNotificationToAndroidApp(warningString);
 				}
 			}
 		}

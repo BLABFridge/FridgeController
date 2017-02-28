@@ -1,14 +1,18 @@
-class ComparableDate extends java.util.Date {
+import java.lang.Math;
+
+class ComparableDate {
 
 	public static final int SECONDS_PER_DAY = (60*60*24);
 	public static final int MILLIS_PER_DAY = SECONDS_PER_DAY * 1000;
 
+	private long t;
+
 	public ComparableDate(){
-		super();
+		t = System.currentTimeMillis();
 	}
 
-	public ComparableDate(int daysFromNow){
-		super(daysFromNow * MILLIS_PER_DAY);
+	public ComparableDate(float daysFromNow){
+		t = System.currentTimeMillis() + Math.round(daysFromNow * MILLIS_PER_DAY);
 	}
 
 	public float daysUntil(){
@@ -23,7 +27,7 @@ class ComparableDate extends java.util.Date {
 	}
 
 	public long millisUntil(){
-		return this.getTime();
+		return t - System.currentTimeMillis();
 	}
 
 }
