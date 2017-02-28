@@ -1,8 +1,7 @@
-Fri Feb 24 14:22:33 EST 2017  Java server running
-Fri Feb 24 14:22:34 EST 2017  FIFO reader is alive
-Fri Feb 24 14:22:34 EST 2017 ExpiryChecker is alive
-Fri Feb 24 14:22:34 EST 2017  Error opening BufferedReader
-Fri Feb 24 14:22:37 EST 2017 ExpiryChecker is checking for expiring items
-Fri Feb 24 14:22:37 EST 2017 sending to android : testItem expires in 8.0 days.
-Fri Feb 24 14:22:40 EST 2017 ExpiryChecker is checking for expiring items
-Fri Feb 24 14:22:43 EST 2017 ExpiryChecker is checking for expiring items
+Tue Feb 28 12:52:12 EST 2017 - Java server running
+Tue Feb 28 12:52:12 EST 2017 - FIFO reader is alive
+Tue Feb 28 12:52:12 EST 2017 - Error opening BufferedReader
+Tue Feb 28 12:52:12 EST 2017 - ExpiryChecker is alive
+Tue Feb 28 12:52:12 EST 2017 - UDP listener is alive
+Tue Feb 28 12:52:15 EST 2017 - ExpiryChecker is checking for expiring items
+Tue Feb 28 12:52:15 EST 2017 - sending to android : testItem expires in 8.0 days.

@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 class FoodItem{
 
-	private static final String matchRegex = "?";
+	public static final String matchRegex = "?";
 
 	private String itemName; 
 	private String tagCode;

@@ -5,9 +5,9 @@ Currently, the fridge assumes that the Database exists on port 1077, and the and
 
 There is a listener on port 1111, for any packets that may be sent to the fridge unprompted. Currently, nothing requres this so all packets are ignored
 
+Note - [0] is the delimeter used between items in packets. Currently, '?' is being used for testing. It is assumed that the padding to 100 bytes are 0/null bytes, NOT delimeters. However, using a delimter (or anything else) should only affect performance, not functionality.
 
 ## Opcodes for interfacing with Database
-Note - [0] is the delimeter used between items in packets. Currently, '?' is being used for testing
 
 
 0 - Request FoodItem : Request a returned foodItem from the database
@@ -43,5 +43,9 @@ Note - [0] is the delimeter used between items in packets. Currently, '?' is bei
 	6[0][String missingTagCode][0][padding to 100 bytes]
 
 7 - FoodItem Returned : Generally in response to a 6 packet, and the same format as a 1 packet 
+#####Format
 	7[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
 
+8 - Enter adding mode - sent to the listener from the android app to automatically enter adding mode
+#####Format
+	8[0][Optional timeout][0][padding to 100 bytes]
