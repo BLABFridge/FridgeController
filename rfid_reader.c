@@ -8,7 +8,16 @@
 #include <sys/stat.h>
 
 #define SPORT_NAME "/dev/ttyAMA0"
-#define RFID_DATA_LENGTH 8
+#define RFID_DATA_LENGTH 14
+#define RFID_TAGCODE_LENGTH 10
+
+//masterStart is inclusive, masterEnd is exclusive
+void arrayCopy(char* master, char* slave, int masterStart, int masterEnd){
+	for (int i = masterStart; i < masterEnd; ++i)
+	{
+		slave[i] = master[i];		
+	}
+}
 
 int set_interface_attributes(int filedescriptor, int speed){
 	struct termios tty;
@@ -73,9 +82,10 @@ int main(int argc, char const *argv[])
 	//Do stuff with the fifo:
 	//write(fifo_fd, "test", sizeof("test"));
 	int j;
-	for (j = 0; j < 10; ++j)
+	while (1)
 	{		
 		char buf[RFID_DATA_LENGTH];
+		char tagCode[RFID_TAGCODE_LENGTH];
 		memset(buf, 0xFF, sizeof(buf));
 		int n = read(sport_fd,buf,sizeof(buf));
 		int i;
@@ -84,7 +94,9 @@ int main(int argc, char const *argv[])
 		}
 		printf("\n");
 
-		write(fifo_fd, buf, sizeof(buf));
+		arrayCopy(buf, tagCode, 1, 12);
+
+		write(fifo_fd, tagCode, sizeof(tagCode));
 	}
 
 	close(fifo_fd);
