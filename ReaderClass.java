@@ -80,7 +80,7 @@ class ReaderClass extends Thread{
 	}
 
 	public void run(){ //run method that listens to the FIFO, manages 'adding mode' aka 'grocery mode' (see top of file for details), and adds/removes things from the local database
-		println("FIFO reader is alive on port " + databaseRequestSocket.getPort());
+		println("FIFO reader is alive");
 		timeLastAdded = System.currentTimeMillis();
 
 		BufferedReader fifoReader = makeBufferedReader();

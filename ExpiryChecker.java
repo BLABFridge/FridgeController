@@ -64,7 +64,7 @@ class ExpiryChecker implements Runnable {
 	}
 
 	public void run(){
-		ReaderClass.println("ExpiryChecker is alive on port " + socket.getPort());
+		ReaderClass.println("ExpiryChecker is alive");
 		while(true){
 			try{
 				Thread.sleep(3000); //sleep for 5 minutes

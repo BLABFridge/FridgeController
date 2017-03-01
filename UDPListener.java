@@ -22,7 +22,7 @@ class UDPListener extends Thread {
 	}
 
 	public void run(){
-		ReaderClass.println("UDP listener is alive on port " + listenerSocket.getPort());
+		ReaderClass.println("UDP listener is alive");
 		byte[] buf = new byte[100];
 		DatagramPacket p = new DatagramPacket(buf, buf.length);
 		try{
