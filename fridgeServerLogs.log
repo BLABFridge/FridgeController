@@ -1,7 +1,55 @@
-Tue Feb 28 13:45:53 EST 2017 - Java server running
-Tue Feb 28 13:45:53 EST 2017 - FIFO reader is alive
-Tue Feb 28 13:45:53 EST 2017 - Error opening BufferedReader
-Tue Feb 28 13:45:53 EST 2017 - ExpiryChecker is alive
-Tue Feb 28 13:45:53 EST 2017 - UDP listener is alive
-Tue Feb 28 13:45:56 EST 2017 - ExpiryChecker is checking for expiring items
-Tue Feb 28 13:45:56 EST 2017 - sending to android : testItem expires in 0.023154167 hours.
+Wed Mar 01 10:02:16 EST 2017 - Java server running
+Wed Mar 01 10:02:17 EST 2017 - FIFO reader is alive on port -1
+Wed Mar 01 10:02:17 EST 2017 - Error opening BufferedReader
+Wed Mar 01 10:02:17 EST 2017 - ExpiryChecker is alive on port -1
+Wed Mar 01 10:02:17 EST 2017 - UDP listener is alive on port -1
+Wed Mar 01 10:02:20 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:02:20 EST 2017 - sending to android : testItem expires in 0.023145834 hours.
+Wed Mar 01 10:02:40 EST 2017 - The android did not respond
+Wed Mar 01 10:02:43 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:02:43 EST 2017 - sending to android : testItem expires in 0.01674389 hours.
+Wed Mar 01 10:03:03 EST 2017 - The android did not respond
+Wed Mar 01 10:03:06 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:03:06 EST 2017 - sending to android : testItem expires in 0.010349444 hours.
+Wed Mar 01 10:03:26 EST 2017 - The android did not respond
+Wed Mar 01 10:03:29 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:03:29 EST 2017 - sending to android : testItem expires in 0.003954722 hours.
+Wed Mar 01 10:03:49 EST 2017 - The android did not respond
+Wed Mar 01 10:03:52 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:03:52 EST 2017 - sending to android : testItem expires in -0.0024405555 hours.
+Wed Mar 01 10:04:12 EST 2017 - The android did not respond
+Wed Mar 01 10:04:15 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:04:15 EST 2017 - sending to android : testItem expires in -0.008836111 hours.
+Wed Mar 01 10:04:35 EST 2017 - The android did not respond
+Wed Mar 01 10:04:38 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:04:38 EST 2017 - sending to android : testItem expires in -0.015231389 hours.
+Wed Mar 01 10:04:58 EST 2017 - The android did not respond
+Wed Mar 01 10:05:01 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:05:01 EST 2017 - sending to android : testItem expires in -0.021626944 hours.
+Wed Mar 01 10:05:21 EST 2017 - The android did not respond
+Wed Mar 01 10:05:24 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:05:24 EST 2017 - sending to android : testItem expires in -0.028021667 hours.
+Wed Mar 01 10:05:44 EST 2017 - The android did not respond
+Wed Mar 01 10:05:47 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:05:47 EST 2017 - sending to android : testItem expires in -0.034412224 hours.
+Wed Mar 01 10:06:07 EST 2017 - The android did not respond
+Wed Mar 01 10:06:10 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:06:10 EST 2017 - sending to android : testItem expires in -0.04080722 hours.
+Wed Mar 01 10:06:30 EST 2017 - The android did not respond
+Wed Mar 01 10:06:33 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:06:33 EST 2017 - sending to android : testItem expires in -0.0471975 hours.
+Wed Mar 01 10:06:53 EST 2017 - The android did not respond
+Wed Mar 01 10:06:56 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:06:56 EST 2017 - sending to android : testItem expires in -0.05359278 hours.
+Wed Mar 01 10:07:16 EST 2017 - The android did not respond
+Wed Mar 01 10:07:19 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:07:19 EST 2017 - sending to android : testItem expires in -0.059988335 hours.
+Wed Mar 01 10:07:39 EST 2017 - The android did not respond
+Wed Mar 01 10:07:42 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:07:42 EST 2017 - sending to android : testItem expires in -0.06638278 hours.
+Wed Mar 01 10:08:02 EST 2017 - The android did not respond
+Wed Mar 01 10:08:05 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:08:05 EST 2017 - sending to android : testItem expires in -0.07277834 hours.
+Wed Mar 01 10:08:25 EST 2017 - The android did not respond
+Wed Mar 01 10:08:28 EST 2017 - ExpiryChecker is checking for expiring items
+Wed Mar 01 10:08:28 EST 2017 - sending to android : testItem expires in -0.07917306 hours.

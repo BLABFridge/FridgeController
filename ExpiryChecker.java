@@ -64,7 +64,7 @@ class ExpiryChecker implements Runnable {
 	}
 
 	public void run(){
-		ReaderClass.println("ExpiryChecker is alive");
+		ReaderClass.println("ExpiryChecker is alive on port " + socket.getPort());
 		while(true){
 			try{
 				Thread.sleep(3000); //sleep for 5 minutes
@@ -87,7 +87,7 @@ class ExpiryChecker implements Runnable {
 				if (expiryDate != 0){
 					String warningString = checkItem.getName() + " expires in " + expiryDate + (expiryDateIsInHours ? " hours." : " days.");
 					ReaderClass.println("sending to android : " + warningString);
-					sendNotificationToAndroidApp(warningString);
+					if (sendNotificationToAndroidApp(warningString)) checkItem.warned();
 				}
 			}
 		}

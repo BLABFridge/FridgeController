@@ -70,12 +70,20 @@ class FoodItem{
 		//assumes warning times are generated in order, 1st is the soonest, nth is the closest to expiry date
 		if(warningTimes.size() > 0){
 			if(expiresInHours() <= warningTimes.get(0)){
-				warningTimes.remove(0);
 				return true;
 			}
 		}
 		return false;
 	}
+
+	public boolean warned(){
+		if (warningTimes.size() > 0) {
+			warningTimes.remove(0);
+			return true;
+		}
+		return false;
+	}
+
 
 	public boolean equals(Object o){ //this equals method does not compare all fields, it returns true if the names match, ignoring expiry dates
 		if (o instanceof FoodItem){
