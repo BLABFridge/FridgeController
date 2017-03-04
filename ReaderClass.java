@@ -36,7 +36,7 @@ class ReaderClass extends Thread{
 	private boolean addingMode = false;
 	private int addingModeTimeout = 30000; //30 second timeout default
 	private long timeLastAdded;
-	private LinkedList db;
+	private Database db;
 	private DatagramSocket databaseRequestSocket;
 
 
@@ -45,7 +45,7 @@ class ReaderClass extends Thread{
 	}
 
 
-	public ReaderClass(LinkedList d){
+	public ReaderClass(Database d){
 		db = d;
 		try{ //DEBUG port is 1112
 			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
@@ -95,7 +95,6 @@ class ReaderClass extends Thread{
 			try{
 				fifoReader.read(tagCodeCharArray, 0, tagCodeCharArray.length);
 				println("Input from RFID_FIFO");
-				tagCode = new String(tagCodeCharArray);
 				if (System.currentTimeMillis() - timeLastAdded > 30000){ //it's been more than 30 since the last time something was added
 					addingMode = false;	//no longer in adding mode
 					println("Leaving adding mode");
@@ -109,12 +108,12 @@ class ReaderClass extends Thread{
 			// tagCodeCharArray = tagCode.getBytes();
 
 			FoodItem iToAdd = null;
-			int index = db.indexOf(tagCode);
+			int index = db.indexOf(tagCodeCharArray);
 				
 			//either scenario creates an iToAdd
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already
 				println("Item " + tagCodeCharArray + " not found locally, fetching from remote database");
-				iToAdd = getItemFromRemoteDatabase(tagCode); //it's not already in the fridge, we have to fetch the item from the database	
+				iToAdd = getItemFromRemoteDatabase(tagCodeCharArray); //it's not already in the fridge, we have to fetch the item from the database	
 				addingMode = true;
 				println("Switching to adding mode");
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
@@ -140,18 +139,23 @@ class ReaderClass extends Thread{
 				println("Obtaining an iToAdd failed, no item is being added to the fridge");	
 			}
 
-			println(tagCode);
 			fifoReader = makeBufferedReader();//make a new reader, this is the only way I can figure out how to clear it so it blocks on the next read
 		}
 	}
 
-	public FoodItem getItemFromRemoteDatabase(String tagCode){
+	public FoodItem getItemFromRemoteDatabase(char[] tagCode){
 		
+		byte[] tagCodeAsBytes = new byte[tagCode.length * 2];
+		
+		for(int i = 0; i < tagCode.length; ++i){
+			tagCodeAsBytes[i*2] = (byte)(tagCode[i] & 0xff >> 8);
+			tagCodeAsBytes[i*2 + 1] = (byte) (tagCode[i] & 0xff);
+		}
+
 		//create the byte array
 		byte[] byteArray = new byte[datagramLength];
 		byteArray[0] = '0'; //opcode 0 for 'RequestFooditem'
 		byteArray[1] = 0;
-		byte[] tagCodeAsBytes = tagCode.getBytes();
 		System.arraycopy(tagCodeAsBytes, 0, byteArray, 2, tagCodeAsBytes.length);
 		//fill the rest of the packet with null bytes CHECKFIX
 
@@ -208,9 +212,9 @@ class ReaderClass extends Thread{
 
 		println("Java server running");
 
-		LinkedList<FoodItem> database = new LinkedList<FoodItem>();
+		Database<FoodItem> database = new Database<FoodItem>();
 
-		FoodItem f = new FoodItem("testCode", "testItem",(float) 0.001);
+		FoodItem f = new FoodItem("testCode".toCharArray(), "testItem",(float) 0.001);
 		f.renewExpiryDate();
 		database.add(f);
 

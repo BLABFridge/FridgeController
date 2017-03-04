@@ -9,7 +9,7 @@ class FoodItem{
 	public static final String matchRegexOpcodeDelimiter = "\\?";
 
 	private String itemName; 
-	private String tagCode;
+	private char[] tagCode;
 	private ComparableDate expiryDate;
 	private float lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
 	private ArrayList<Float> warningTimes = new ArrayList(); //warningTimes will be the length of warningExpiryToLifetimeRatio.length
@@ -18,11 +18,11 @@ class FoodItem{
 	
 
 
-	public FoodItem(String tagCode, String name){
+	public FoodItem(char[] tagCode, String name){
 		this(tagCode, name, 1); //default lifetime of 1 day
 	}
 
-	public FoodItem(String tagCode, String name, float lifetime){
+	public FoodItem(char[] tagCode, String name, float lifetime){
 		this.tagCode = tagCode;
 		expiryDate = null;
 		itemName = name;
@@ -34,13 +34,15 @@ class FoodItem{
 
 	public FoodItem(FoodItem anotherFoodItem){
 		this.itemName = new String(anotherFoodItem.itemName);
-		this.tagCode = new String(anotherFoodItem.tagCode);
+		for (int i = 0; i < ReaderClass.TAGCODE_LENGTH; ++i) {
+			this.tagCode[i] = anotherFoodItem.tagCode[i];
+		}
 		this.lifetime = anotherFoodItem.lifetime;
 		this.warningTimes = new ArrayList<Float>(anotherFoodItem.warningTimes);
 		//do not copy expiry information, renewExpiryDate() MUST be called
 	}
 
-	public static FoodItem getFoodItemFromByteArray(String tagCode, byte[] bytes){
+	public static FoodItem getFoodItemFromByteArray(char[] tagCode, byte[] bytes){
 
 		String splittableString = new String(bytes);
 		// System.out.println("Splitting " + t);
@@ -89,8 +91,8 @@ class FoodItem{
 		if (o instanceof FoodItem){
 			FoodItem i = (FoodItem) o;
 			return (this.itemName.equals(i.itemName) && this.tagCode.equals(i.tagCode));
-		} else if (o instanceof String){ //this is a bit of a hack so that the linkedList can be searched by just a tagCode. Done because a hashTable cannot have duplicates
-			return (this.tagCode.equals((String) o));
+		} else if (o instanceof char[]){ //this is a bit of a hack so that the linkedList can be searched by just a tagCode. Done because a hashTable cannot have duplicates
+			return (this.tagCode.equals((char[]) o));
 		}
 		return false;
 	}

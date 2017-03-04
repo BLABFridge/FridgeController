@@ -12,14 +12,14 @@ import java.util.Date;
 
 class ExpiryChecker implements Runnable {
 
-	private LinkedList<FoodItem> db;
+	private Database<FoodItem> db;
 	private DatagramSocket socket;
 
 
 	public static final String androidInetAddressString = "127.0.0.1";
 	public static final int androidPort = 1078;
 
-	public ExpiryChecker(LinkedList db){
+	public ExpiryChecker(Database db){
 		this.db = db;
 		try{
 			socket = new DatagramSocket();
@@ -73,7 +73,8 @@ class ExpiryChecker implements Runnable {
 			}
 			ReaderClass.println("ExpiryChecker is checking for expiring items");
 			//check through the database
-			for(FoodItem checkItem : db){
+			for(int i = 0; i < db.size(); ++i){
+				FoodItem checkItem = db.get(i);
 				float expiryDate = 0;
 				boolean expiryDateIsInHours = false;
 				if (checkItem.needsWarning()){

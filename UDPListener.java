@@ -14,7 +14,7 @@ class UDPListener extends Thread {
 
 	public UDPListener(ReaderClass r){
 		try{
-			listenerSocket = new DatagramSocket(1111);
+			listenerSocket = new DatagramSocket(UDP_LISTENER_PORT);
 		} catch (IOException e){
 			ReaderClass.println("Error creating the UDP listener");
 		}
