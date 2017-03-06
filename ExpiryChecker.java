@@ -86,9 +86,15 @@ class ExpiryChecker implements Runnable {
 				}
 
 				if (expiryDate != 0){
-					String warningString = checkItem.getName() + " expires in " + expiryDate + (expiryDateIsInHours ? " hours." : " days.");
+					String s = (db.numberOfInstances(checkItem) > 1) ? "s expire in " : " expires in ";
+					String warningString = checkItem.getName() + s + expiryDate + (expiryDateIsInHours ? " hours." : " days.");
 					ReaderClass.println("sending to android : " + warningString);
-					if (sendNotificationToAndroidApp(warningString)) checkItem.warned();
+					if (sendNotificationToAndroidApp(warningString)){
+						for (int j = 0; j < db.size(); ++j){
+							FoodItem f = db.get(j);
+							if (f.equals(checkItem)) f.warned();
+						}	
+					}
 				}
 			}
 		}

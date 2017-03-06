@@ -36,7 +36,7 @@ class ReaderClass extends Thread{
 	private boolean addingMode = false;
 	private int addingModeTimeout = 30000; //30 second timeout default
 	private long timeLastAdded;
-	private Database db;
+	private Database<FoodItem> db;
 	private DatagramSocket databaseRequestSocket;
 
 
@@ -45,7 +45,7 @@ class ReaderClass extends Thread{
 	}
 
 
-	public ReaderClass(Database d){
+	public ReaderClass(Database<FoodItem> d){
 		db = d;
 		try{ //DEBUG port is 1112
 			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
@@ -108,11 +108,11 @@ class ReaderClass extends Thread{
 			// tagCodeCharArray = tagCode.getBytes();
 
 			FoodItem iToAdd = null;
-			int index = db.indexOf(tagCodeCharArray);
+			int index = db.indexOf(new FoodItem(tagCodeCharArray));
 				
 			//either scenario creates an iToAdd
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already
-				println("Item " + tagCodeCharArray + " not found locally, fetching from remote database");
+				println("Item " + new String(tagCodeCharArray) + " not found locally, fetching from remote database");
 				iToAdd = getItemFromRemoteDatabase(tagCodeCharArray); //it's not already in the fridge, we have to fetch the item from the database	
 				addingMode = true;
 				println("Switching to adding mode");

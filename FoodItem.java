@@ -42,6 +42,10 @@ class FoodItem{
 		//do not copy expiry information, renewExpiryDate() MUST be called
 	}
 
+	public FoodItem(char[] tagCode){ //DO NOT USE FOODITEMS CREATED WITH THIS METHOD, THIS IS ONY FOR EQUALS
+		this.tagCode = tagCode;
+	}
+
 	public static FoodItem getFoodItemFromByteArray(char[] tagCode, byte[] bytes){
 
 		String splittableString = new String(bytes);
@@ -87,18 +91,21 @@ class FoodItem{
 	}
 
 
-	public boolean equals(Object o){ //this equals method does not compare all fields, it returns true if the names match, ignoring expiry dates
+	@Override
+	public boolean equals(Object o){ //this equals method does not compare all fields, it returns true if the tagcodes match, to comply with stupid java's dumbass symmetry shit. It violates so many design rules to comply with one stupid design rule. java is dumb.
 		if (o instanceof FoodItem){
 			FoodItem i = (FoodItem) o;
-			return (this.itemName.equals(i.itemName) && this.tagCode.equals(i.tagCode));
-		} else if (o instanceof char[]){ //this is a bit of a hack so that the linkedList can be searched by just a tagCode. Done because a hashTable cannot have duplicates
-			return (this.tagCode.equals((char[]) o));
+			return (this.tagCode.equals(i.tagCode));
 		}
+		// } else if (o instanceof String){ //this is a bit of a hack so that the linkedList can be searched by just a tagCode. Done because a hashTable cannot have duplicates
+		// 	ReaderClass.println("Checking tag code in fooditem equals method : " + (String) o + "compared with" + new String(tagCode)); //DEBUG
+		// 	return (this.tagCode.equals(((String) o).toCharArray()));
+		// }
 		return false;
 	}
 
 	public String toString(){
-		String retString = "[Name : " + itemName + ", tagCode : " + tagCode + ", expires in : " + expiryDate.daysUntil() + " days]";
+		String retString = "[Name : " + itemName + ", tagCode : " + new String(tagCode) + ", expires in : " + expiryDate.daysUntil() + " days]";
 		return retString;
 	}
 

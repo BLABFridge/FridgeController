@@ -1,0 +1,15 @@
+#!/bin/bash
+
+rm -r /var/run/RFID_FIFO
+
+mkfifo /var/run/RFID_FIFO
+
+echo "FIFO is up, safe to start java listener"
+
+
+while true
+do
+	read -p "Input a string to send through the fifo > " input
+
+	echo $input > /var/run/RFID_FIFO
+done

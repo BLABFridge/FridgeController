@@ -13,21 +13,34 @@ class Database<T> {
 		notifyAll();
 	}
 
-	public synchronized T get(int i){
+	public T get(int i){
 		return items.get(i);
 	}
 
-	public synchronized int size(){
+	public int size(){
 		return items.size();
 	}
 
-	public synchronized int indexOf(T t){
-		return items.indexOf(t);
+	public int indexOf(T t){
+		return items.indexOf(t);	
 	}
 
 	public synchronized void remove(T t){
 		items.remove(t);
 		notifyAll();
+	}
+
+	public synchronized void remove(int i){
+		items.remove(i);
+		notifyAll();
+	}
+
+	public int numberOfInstances(T t){
+		int n = 0;
+		for (int i = 0; i < items.size(); ++i) {
+			if (items.get(i).equals(t)) ++n;
+		}
+		return n;
 	}
 	
 }
