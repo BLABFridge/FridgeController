@@ -13,9 +13,10 @@
 
 //masterStart is inclusive, masterEnd is exclusive
 void arrayCopy(char* master, char* slave, int masterStart, int masterEnd){
-	for (int i = masterStart; i < masterEnd; ++i)
+	int i;
+	for (i = masterStart; i < masterEnd; i++)
 	{
-		slave[i] = master[i];		
+		slave[i] = master[i];
 	}
 }
 
@@ -83,20 +84,22 @@ int main(int argc, char const *argv[])
 	//write(fifo_fd, "test", sizeof("test"));
 	int j;
 	while (1)
-	{		
+	{
 		char buf[RFID_DATA_LENGTH];
 		char tagCode[RFID_TAGCODE_LENGTH];
 		memset(buf, 0xFF, sizeof(buf));
 		int n = read(sport_fd,buf,sizeof(buf));
-		int i;
-		for (i = 0; i < RFID_DATA_LENGTH; ++i){
-			printf("%x", buf[i]);
-		}
-		printf("\n");
 
 		arrayCopy(buf, tagCode, 1, 12);
 
+		int i;
+		for (i = 0; i < RFID_TAGCODE_LENGTH; ++i){
+			printf("%x", tagCode[i]);
+		}
+		printf("\n");
+
 		write(fifo_fd, tagCode, sizeof(tagCode));
+		n = read(sport_fd, buf, sizeof(buf));
 	}
 
 	close(fifo_fd);

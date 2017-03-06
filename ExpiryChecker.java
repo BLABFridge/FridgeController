@@ -67,7 +67,7 @@ class ExpiryChecker implements Runnable {
 		ReaderClass.println("ExpiryChecker is alive");
 		while(true){
 			try{
-				Thread.sleep(3000); //sleep for 5 minutes
+				Thread.sleep(300000); //sleep for 5 minutes
 			} catch(InterruptedException e){
 				//might do something here, if the sleep is interrupted
 			}

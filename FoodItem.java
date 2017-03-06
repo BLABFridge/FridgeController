@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 class FoodItem{
 
-	public static final String matchRegexOpcodeDelimiter = "?";
+	public static final String matchRegexOpcodeDelimiter = "\\?";
 
 	private String itemName; 
 	private String tagCode;

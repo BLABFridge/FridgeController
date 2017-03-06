@@ -49,7 +49,7 @@ class ReaderClass extends Thread{
 		db = d;
 		try{ //DEBUG port is 1112
 			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
-			databaseRequestSocket.setSoTimeout(20000); //the database has 20 seconds to respond to a request
+			databaseRequestSocket.setSoTimeout(200000); //the database has 20 seconds to respond to a request
 		} catch(SocketException e){
 			println("Error creating datagram socket");
 		}
