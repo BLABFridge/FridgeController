@@ -154,7 +154,7 @@ class ReaderClass extends Thread{
 
 		//create the byte array
 		byte[] byteArray = new byte[datagramLength];
-		byteArray[0] = '0'; //opcode 0 for 'RequestFooditem'
+		byteArray[0] = FoodItem.opcodeDelimiter.getBytes()[0]; //opcode 0 for 'RequestFooditem'
 		byteArray[1] = 0;
 		System.arraycopy(tagCodeAsBytes, 0, byteArray, 2, tagCodeAsBytes.length);
 		//fill the rest of the packet with null bytes CHECKFIX

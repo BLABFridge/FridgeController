@@ -3,9 +3,20 @@
 The fridge controller does not have any static ports, all ports are dynamically allocated at runtime. This means that both the android phone and the database must have static ports
 Currently, the fridge assumes that the Database exists on port 1077, and the android app exists on port 1078
 
-There is a listener on port 1111, for any packets that may be sent to the fridge unprompted. Currently, nothing requres this so all packets are ignored
+There is a listener on port 1111, for any packets that may be sent to the fridge unprompted.
 
 Note - [0] is the delimeter used between items in packets. Currently, '?' is being used for testing. It is assumed that the padding to 100 bytes are 0/null bytes, NOT delimeters. However, using a delimter (or anything else) should only affect performance, not functionality.
+
+###AddingMode
+AddingMode is a mode used to add duplicate FoodItems to the fridge. There is no way to determine if an apple is being removed from the fridge, or a new one added. This is what addingMode is for.
+
+If an item is scanned, and it is not already in the fridge, addingMode will be entered until the timeout (currently 30 seconds).
+While in addingMode, any items that are already in the fridge will be duplicated, and another item made with an updated expiry date.
+While not in addingMode, any items that are already in the fridge will be removed, starting at the head of the database (the oldest item will theoretically be removed)
+
+AddingMode can also be manually entered by sending a UDP packet to the listener, with an optional timeout. THE TIMEOUT SPECIFIED IS PERMANENT, and the new timeout will be used for all subsequent entries into addingmode, until a new timeout is specified
+
+Multiple FoodItems will be warned once, for the first found FoodItem of that type, this assumes that all duplicates have similar expiry dates, or that the oldest one is first (which should be the case with addingMode)
 
 ## Opcodes for interfacing with Database
 

@@ -34,7 +34,7 @@ class ExpiryChecker implements Runnable {
 		// create the byte array
 		byte[] byteArray = new byte[ReaderClass.datagramLength];
 		byteArray[0] = '5'; //opcode 5 for 'Notify User'
-		byteArray[1] = FoodItem.matchRegexOpcodeDelimiter.getBytes()[0];
+		byteArray[1] = FoodItem.opcodeDelimiter.getBytes()[0];
 		byte[] notifStringAsBytes = notificationString.getBytes();
 		System.arraycopy(notifStringAsBytes, 0, byteArray, 2, notifStringAsBytes.length);
 		
