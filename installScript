@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ EUID != 0 ]; then
-	sudo "$0" "$@"
+if [ $EUID != 0 ]; then
+	gksu "$0" "$@"
 	exit $?
 fi
 
@@ -9,8 +9,10 @@ PROGRAM_DIR="/usr/bin/FridgeController"
 
 mkdir "$PROGRAM_DIR"
 
-sed -i "3i$PROGRAM_DIR" startupScript #will write to the startup script so we have the right directory
+sed -i "3iPROGRAM_DIR=$PROGRAM_DIR" startupScript #will write to the startup script so we have the right directory
 
 mv *.class rfid_reader README.md "$PROGRAM_DIR/"
 
 mv fridgeController /etc/init.d/
+
+systemctl daemon-reload #reload the daemons

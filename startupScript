@@ -1,5 +1,8 @@
 #!/bin/bash
 
+PROGRAM_DIR=/usr/bin/FridgeController
+PROGRAM_DIR=/usr/bin/FridgeController
+/usr/bin/FridgeController
 
 
 
