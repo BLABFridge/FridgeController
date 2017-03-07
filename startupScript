@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+
+
+if [ $EUID != 0 ]; then
+	gksu "$0" "$@"
+	exit $?
+fi
+
+###### fix this to point to the install directory
+cd "$PROGRAM_DIR"
+
+./rfid_reader &
+java ReaderClass

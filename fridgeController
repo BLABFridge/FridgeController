@@ -1,0 +1,45 @@
+DESC="Service control script for fridgeController"
+NAME=fridgeControl
+
+do_start()
+{
+	echo "Starting fridge controller"
+	start-stop-daemon --start --oknodo --pidfile /run/fridgeController.pid --startas /usr/bin/fridgeControllerStart #start the fridgeController
+}
+
+do_stop()
+{
+	echo "Stopping fridge controller"
+	start-stop-daemon --pidfile /run/fridgeController.pid --stop --oknodo --retry 5
+}
+
+show_status()
+{
+	start-stop-daemon --pidfile /run/fridgeController.pid --status
+	if [ "$?" -eq "0" ] 
+	then
+		echo -e "Fridge controller is \e[32;1running\e[0m"
+		tail /var/log/fridgeServerLogs.log
+	else
+		echo -e "Fridge controller is \e[31;1mnot running\e[0m"
+	fi
+}
+
+if [ $EUID != 0 ]; then
+	gksu "$0" "$@"
+	exit $?
+fi
+
+case "$1" in
+	start)
+		do_start
+		;;
+	stop)
+		do_stop
+		;;
+	status)
+		show_status
+		;;
+esac
+
+exit 0
