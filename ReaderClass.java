@@ -207,8 +207,13 @@ class ReaderClass extends Thread{
 
 		if (byteArray[0] == '2'){
 			//The database does not have the food item, at some point, we may make a request to the android app, for now, give up and return null
-			println("Database does not have this tagCode");
-			return null;
+			println("Database does not have this tagCode, polling android");
+			FoodItem item = sendnotContainedToAndroid(tagCode);
+			if (item == null) {
+				return null;
+			} else {
+				return item;
+			}
 		} else if(byteArray[0] == '1') { //the database responded correctly
 			println("Database response received, processing"); //DEBUG/verbose/log?
 			println("Database responded with " + new String(byteArray)); //DEBUG
