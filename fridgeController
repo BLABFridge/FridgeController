@@ -6,13 +6,14 @@ NAME=fridgeControl
 do_start()
 {
 	echo "Starting fridge controller"
-	start-stop-daemon --start --oknodo --pidfile /run/fridgeController.pid --startas /usr/bin/FridgeController/fridgeControllerStart #start the fridgeController
+	start-stop-daemon --start --oknodo --startas /usr/bin/FridgeController/fridgeControllerStart #start the fridgeController
 }
 
 do_stop()
 {
 	echo "Stopping fridge controller"
-	start-stop-daemon --pidfile /run/fridgeController.pid --stop --oknodo --retry 5
+	killall ReaderClass
+	killall rfid_reader
 }
 
 show_status()

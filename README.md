@@ -7,6 +7,12 @@ There is a listener on port 1111, for any packets that may be sent to the fridge
 
 Note - [0] is the delimeter used between items in packets. Currently, '?' is being used for testing. It is assumed that the padding to 100 bytes are 0/null bytes, NOT delimeters. However, using a delimter (or anything else) should only affect performance, not functionality.
 
+###Installation
+the install script should take care of putting things where they need to be. Testing should be done on blank systems (since I have trash everywhere from testing).
+
+###Init.d Service
+After installation, the system can be started with `service fridgeController start`. Stopping the service has not been implemented, so one must `ps -ef | grep` for the processes and kill them manually.
+
 ###AddingMode
 AddingMode is a mode used to add duplicate FoodItems to the fridge. There is no way to determine if an apple is being removed from the fridge, or a new one added. This is what addingMode is for.
 
