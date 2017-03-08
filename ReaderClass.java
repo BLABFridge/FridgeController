@@ -157,7 +157,6 @@ class ReaderClass extends Thread{
 		byteArray[0] = FoodItem.opcodeDelimiter.getBytes()[0]; //opcode 0 for 'RequestFooditem'
 		byteArray[1] = 0;
 		System.arraycopy(tagCodeAsBytes, 0, byteArray, 2, tagCodeAsBytes.length);
-		//fill the rest of the packet with null bytes CHECKFIX
 
 		//put the byte array into a packet destined for port 1077 on the database
 		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, remoteDatabasePort);
@@ -198,7 +197,7 @@ class ReaderClass extends Thread{
 	}
 
 	public static void main(String[] args) {
-		File logFile = new File("./fridgeServerLogs.log");
+		File logFile = new File("/var/log/fridgeServerLogs.log");
 
 		PrintStream oStream = null;
 

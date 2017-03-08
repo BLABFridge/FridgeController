@@ -9,10 +9,13 @@ PROGRAM_DIR="/usr/bin/FridgeController"
 
 mkdir "$PROGRAM_DIR"
 
-sed -i "3iPROGRAM_DIR=$PROGRAM_DIR" startupScript #will write to the startup script so we have the right directory
+sed -i "3iPROGRAM_DIR=$PROGRAM_DIR" fridgeControllerStart #will write to the startup script so we have the right directory
 
-mv *.class rfid_reader README.md "$PROGRAM_DIR/"
+chmod +x fridgeControllerStart
+chmod +x fridgeController
 
-mv fridgeController /etc/init.d/
+cp *.class rfid_reader README.md fridgeControllerStart "$PROGRAM_DIR/"
+
+cp fridgeController /etc/init.d/
 
 systemctl daemon-reload #reload the daemons

@@ -1,10 +1,12 @@
+#!/bin/bash
+
 DESC="Service control script for fridgeController"
 NAME=fridgeControl
 
 do_start()
 {
 	echo "Starting fridge controller"
-	start-stop-daemon --start --oknodo --pidfile /run/fridgeController.pid --startas /usr/bin/fridgeControllerStart #start the fridgeController
+	start-stop-daemon --start --oknodo --pidfile /run/fridgeController.pid --startas /usr/bin/FridgeController/fridgeControllerStart #start the fridgeController
 }
 
 do_stop()
