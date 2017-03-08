@@ -16,7 +16,7 @@ class ExpiryChecker implements Runnable {
 	private DatagramSocket socket;
 
 
-	public static final String androidInetAddressString = "127.0.0.1";
+	public static final String androidInetAddressString = "10.0.0.5";
 	public static final int androidPort = 1078;
 
 	public ExpiryChecker(Database db){
@@ -37,6 +37,7 @@ class ExpiryChecker implements Runnable {
 		byteArray[1] = FoodItem.opcodeDelimiter.getBytes()[0];
 		byte[] notifStringAsBytes = notificationString.getBytes();
 		System.arraycopy(notifStringAsBytes, 0, byteArray, 2, notifStringAsBytes.length);
+		byteArray[notifStringAsBytes.length + 2] = FoodItem.opcodeDelimiter.getBytes()[0];
 		
 		DatagramPacket p = null;
 

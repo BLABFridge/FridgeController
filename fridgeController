@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PID_FILE=/var/run/fridgePIDS.pid
+PROGRAM_DIR=/usr/bin/FridgeController
 DESC="Service control script for fridgeController"
 NAME=fridgeControl
 

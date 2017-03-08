@@ -26,8 +26,8 @@ class ReaderClass extends Thread{
 	public static final int datagramLength = 100;
 
 	public static final String fifoName = "/var/run/RFID_FIFO";
-	public static final String remoteDatabaseInetAddressString = "127.0.0.1"; //set this appropriately
-	public static final int remoteDatabasePort = 1077;
+	public static final String remoteDatabaseInetAddressString = "10.0.0.5"; //set this appropriately
+	public static final int remoteDatabasePort = 4001;
 	public static final int TAGCODE_LENGTH = 10;
 
 	private InetAddress remoteDatabaseInetAddress;
@@ -38,6 +38,7 @@ class ReaderClass extends Thread{
 	private long timeLastAdded;
 	private Database<FoodItem> db;
 	private DatagramSocket databaseRequestSocket;
+	private DatagramSocket androidCommSocket;
 
 
 	public static void println(String s){
@@ -50,6 +51,8 @@ class ReaderClass extends Thread{
 		try{ //DEBUG port is 1112
 			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
 			databaseRequestSocket.setSoTimeout(200000); //the database has 20 seconds to respond to a request
+			androidCommSocket = new DatagramSocket();
+			androidCommSocket.setSoTimeout(20000);
 		} catch(SocketException e){
 			println("Error creating datagram socket");
 		}
@@ -73,6 +76,29 @@ class ReaderClass extends Thread{
 	public void enterAddingMode(){
 		addingMode = true;
 	}
+
+	public byte[] makeByteArray(byte opcode, byte[] arg1){
+		//create the byte array
+		byte[] byteArray = new byte[datagramLength];
+		byteArray[0] = opcode; //opcode 6 for Not contained in Database
+		byteArray[1] = FoodItem.opcodeDelimiter.getBytes()[0]; 
+		System.arraycopy(arg1, 0, byteArray, 2, arg1.length);
+		byteArray[arg1.length + 2] = FoodItem.opcodeDelimiter.getBytes()[0];
+
+		return byteArray;
+
+	}
+
+
+	// public byte[] makeByteArray(byte opcode, byte[] arg1, byte[] arg2){
+	// 	//create the byte array
+	// 	byte[] byteArray = new byte[datagramLength];
+	// 	byteArray[0] = '6'; //opcode 6 for Not contained in Database
+	// 	byteArray[1] = FoodItem.opcodeDelimiter.getBytes()[0]; 
+	// 	System.arraycopy(tagCodeAsBytes, 0, byteArray, 2, tagCodeAsBytes.length);
+	// 	byteArray[tagCodeAsBytes.length + 2] = FoodItem.opcodeDelimiter.getBytes()[0];
+
+	// }
 
 	public void enterAddingMode(int newTimeout){
 		addingMode = true;
@@ -152,12 +178,9 @@ class ReaderClass extends Thread{
 			tagCodeAsBytes[i*2 + 1] = (byte) (tagCode[i] & 0xff);
 		}
 
-		//create the byte array
-		byte[] byteArray = new byte[datagramLength];
-		byteArray[0] = FoodItem.opcodeDelimiter.getBytes()[0]; //opcode 0 for 'RequestFooditem'
-		byteArray[1] = 0;
-		System.arraycopy(tagCodeAsBytes, 0, byteArray, 2, tagCodeAsBytes.length);
+		byte opcode = '0';
 
+		byte[] byteArray = makeByteArray(opcode, tagCodeAsBytes);
 		//put the byte array into a packet destined for port 1077 on the database
 		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, remoteDatabasePort);
 
@@ -195,6 +218,48 @@ class ReaderClass extends Thread{
 			return null;
 		}
 	}
+
+	public FoodItem sendnotContainedToAndroid(char[] tagCode){
+		byte[] tagCodeAsBytes = new byte[tagCode.length * 2];
+		
+		for(int i = 0; i < tagCode.length; ++i){
+			tagCodeAsBytes[i*2] = (byte)(tagCode[i] & 0xff >> 8);
+			tagCodeAsBytes[i*2 + 1] = (byte) (tagCode[i] & 0xff);
+		}
+
+		byte opcode = '6';
+
+		byte[] byteArray = makeByteArray(opcode, tagCodeAsBytes);
+		//put the byte array into a packet destined for port 1077 on the database
+		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, remoteDatabasePort);
+
+		//try to send the packet
+		try{
+			androidCommSocket.send(p);
+		} catch(IOException e){
+			println("DatagramSocket error while attempting to send packet");
+		}
+
+		try{
+			androidCommSocket.receive(p);
+		} catch (SocketTimeoutException e){
+			println("Android did not respond");			
+			return null;
+		} catch (IOException e){
+			println("IO exception sending on androidCommSocket");
+			return null;
+		}
+
+		byteArray = p.getData();
+
+		if (byteArray[0] == '7'){
+			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);
+		} else{
+			return null;
+		}
+
+	}
+
 
 	public static void main(String[] args) {
 		File logFile = new File("/var/log/fridgeServerLogs.log");

@@ -42,10 +42,6 @@ Multiple FoodItems will be warned once, for the first found FoodItem of that typ
 3 - Update Database : Sent to the database to add this entry
 #####Format
 	3[0][String FoodItem name][0][String lifetimeInDays][0][Hashcode][padding to 100 bytes]
-
-4 - ping : Pingee will respond to pinger with another '4' packet
-#####Format
-	4[0][padding to 100 bytes]
 	
 
 ## Opcodes for interfacing with Android App
