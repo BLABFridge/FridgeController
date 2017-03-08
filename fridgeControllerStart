@@ -1,6 +1,5 @@
 #!/bin/bash
 
-PROGRAM_DIR=/usr/bin/FridgeController
 
 
 
@@ -12,6 +11,10 @@ fi
 ###### fix this to point to the install directory
 cd "$PROGRAM_DIR"
 
+touch "$PID_FILE"
+
 ./rfid_reader &
+echo "$!" > "$PID_FILE"
 sleep 2
 java ReaderClass &
+echo "$!" > "$PID_FILE"

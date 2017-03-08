@@ -6,26 +6,18 @@ NAME=fridgeControl
 do_start()
 {
 	echo "Starting fridge controller"
-	start-stop-daemon --start --oknodo --startas /usr/bin/FridgeController/fridgeControllerStart #start the fridgeController
+	"$PROGRAM_DIR/fridgeControllerStart"
 }
 
 do_stop()
 {
 	echo "Stopping fridge controller"
-	killall ReaderClass
-	killall rfid_reader
+	kill $(<$PID_FILE)
 }
 
 show_status()
 {
-	start-stop-daemon --pidfile /run/fridgeController.pid --status
-	if [ "$?" -eq "0" ] 
-	then
-		echo -e "Fridge controller is \e[32;1running\e[0m"
-		tail /var/log/fridgeServerLogs.log
-	else
-		echo -e "Fridge controller is \e[31;1mnot running\e[0m"
-	fi
+	echo "status"
 }
 
 if [ $EUID != 0 ]; then

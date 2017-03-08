@@ -6,10 +6,16 @@ if [ $EUID != 0 ]; then
 fi
 
 PROGRAM_DIR="/usr/bin/FridgeController"
+PID_FILE="/var/run/fridgePIDS.pid"
 
 mkdir "$PROGRAM_DIR"
 
 sed -i "3iPROGRAM_DIR=$PROGRAM_DIR" fridgeControllerStart #will write to the startup script so we have the right directory
+sed -i "3iPID_FILE=$PID_FILE" fridgeControllerStart #will write to the startup script so we have the right directory
+
+
+sed -i "3iPROGRAM_DIR=$PROGRAM_DIR" fridgeController #will write to the init.d script so we have the right directory
+sed -i "3iPID_FILE=$PID_FILE" fridgeController #will write to the init.d script so we have the right directory
 
 chmod +x fridgeControllerStart
 chmod +x fridgeController
