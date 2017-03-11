@@ -6,7 +6,6 @@ Currently, the fridge assumes that the Database exists on port 1077, and the and
 There is a listener on port 1111, for any packets that may be sent to the fridge unprompted.
 
 Note - [0] is the delimeter used between items in packets. Currently, '?' is being used for testing. It is assumed that the padding to 100 bytes are 0/null bytes, NOT delimeters. However, using a delimter (or anything else) should only affect performance, not functionality.
-It is assumed that all packets end in a delimiter
 
 ###Installation
 the install script should take care of putting things where they need to be. Testing should be done on blank systems (since I have trash everywhere from testing).
@@ -30,7 +29,7 @@ Multiple FoodItems will be warned once, for the first found FoodItem of that typ
 
 0 - Request FoodItem : Request a returned foodItem from the database
 #####Format
-	0[0][hashcode - 10 bytes][padding to 100 bytes]
+	0[0][hashcode - n bytes - TBD][padding to 100 bytes]
 
 1 - FoodItem Returned : This packet contains the requested FoodItem
 #####Format
@@ -42,7 +41,7 @@ Multiple FoodItems will be warned once, for the first found FoodItem of that typ
 
 3 - Update Database : Sent to the database to add this entry
 #####Format
-	3[0][String FoodItem name][0][String lifetimeInDays][0][Hashcode][0][padding to 100 bytes]
+	3[0][String FoodItem name][0][String lifetimeInDays][0][Hashcode][padding to 100 bytes]
 	
 
 ## Opcodes for interfacing with Android App
@@ -56,14 +55,10 @@ Multiple FoodItems will be warned once, for the first found FoodItem of that typ
 #####Format
 	6[0][String missingTagCode][0][padding to 100 bytes]
 
-1 - FoodItem Returned : Generally in response to a 6 packet, identical to above
+7 - FoodItem Returned : Generally in response to a 6 packet, and the same format as a 1 packet 
 #####Format
 	7[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
 
 8 - Enter adding mode - sent to the listener from the android app to automatically enter adding mode
 #####Format
 	8[0][Optional timeout][0][padding to 100 bytes]
-
-9 - Dump Expires Before : Sends a stream of 7 packets containing FoodItems that expire before 'Day' to whoever sent the 9 packet, terminated by a blank 7 packet (none will result in a single, blank 7 packet).
-#####Format
-	9[0][Day][0]

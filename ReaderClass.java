@@ -31,6 +31,7 @@ class ReaderClass extends Thread{
 	public static final int TAGCODE_LENGTH = 10;
 
 	private InetAddress remoteDatabaseInetAddress;
+	private InetAddress androidInetAddress;
 	private BufferedReader fifoReader = null;
 	private String tagBuffer;
 	private boolean addingMode = false;
@@ -43,6 +44,12 @@ class ReaderClass extends Thread{
 
 	public static void println(String s){
 		System.out.println(new Date() + " - " + s);
+	}
+
+	static String getStringFromByteArray(byte[] arr, int indexOfString){
+		String s = new String(arr);
+		String[] strings = s.split(UDPListener.packetDelimeterMatchRegex);
+		return strings[indexOfString];
 	}
 
 
@@ -58,6 +65,7 @@ class ReaderClass extends Thread{
 		}
 		try{
 			remoteDatabaseInetAddress = InetAddress.getByName(remoteDatabaseInetAddressString);
+			androidInetAddress = InetAddress.getByName(ExpiryChecker.androidInetAddressString);
 		} catch(UnknownHostException e){
 			println("No host " + remoteDatabaseInetAddressString);
 		}
@@ -89,6 +97,13 @@ class ReaderClass extends Thread{
 
 	}
 
+	public byte[] charArrayToByteArray(char[] cArr){
+		byte[] bytes = new byte[cArr.length];
+		for(int i = 0; i < cArr.length; ++i){
+			bytes[i] = (byte)(cArr[i]);
+		}
+		return bytes;
+	}
 
 	// public byte[] makeByteArray(byte opcode, byte[] arg1, byte[] arg2){
 	// 	//create the byte array
@@ -140,6 +155,7 @@ class ReaderClass extends Thread{
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already
 				println("Item " + new String(tagCodeCharArray) + " not found locally, fetching from remote database");
 				iToAdd = getItemFromRemoteDatabase(tagCodeCharArray); //it's not already in the fridge, we have to fetch the item from the database	
+				if (iToAdd == null)	println("Obtaining an iToAdd failed, no item is being added to the fridge");	
 				addingMode = true;
 				println("Switching to adding mode");
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
@@ -161,8 +177,6 @@ class ReaderClass extends Thread{
 				db.add(iToAdd);
 				timeLastAdded = System.currentTimeMillis(); //we've already checked whether we should leave adding mode
 				println("Added foodItem to database : " + iToAdd);
-			} else{
-				println("Obtaining an iToAdd failed, no item is being added to the fridge");	
 			}
 
 			fifoReader = makeBufferedReader();//make a new reader, this is the only way I can figure out how to clear it so it blocks on the next read
@@ -170,13 +184,7 @@ class ReaderClass extends Thread{
 	}
 
 	public FoodItem getItemFromRemoteDatabase(char[] tagCode){
-		
-		byte[] tagCodeAsBytes = new byte[tagCode.length * 2];
-		
-		for(int i = 0; i < tagCode.length; ++i){
-			tagCodeAsBytes[i*2] = (byte)(tagCode[i] & 0xff >> 8);
-			tagCodeAsBytes[i*2 + 1] = (byte) (tagCode[i] & 0xff);
-		}
+		byte[] tagCodeAsBytes = charArrayToByteArray(tagCode);
 
 		byte opcode = '0';
 
@@ -225,18 +233,14 @@ class ReaderClass extends Thread{
 	}
 
 	public FoodItem sendnotContainedToAndroid(char[] tagCode){
-		byte[] tagCodeAsBytes = new byte[tagCode.length * 2];
 		
-		for(int i = 0; i < tagCode.length; ++i){
-			tagCodeAsBytes[i*2] = (byte)(tagCode[i] & 0xff >> 8);
-			tagCodeAsBytes[i*2 + 1] = (byte) (tagCode[i] & 0xff);
-		}
+		byte[] tagCodeAsBytes = charArrayToByteArray(tagCode);
 
 		byte opcode = '6';
 
 		byte[] byteArray = makeByteArray(opcode, tagCodeAsBytes);
 		//put the byte array into a packet destined for port 1077 on the database
-		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, remoteDatabaseInetAddress, remoteDatabasePort);
+		DatagramPacket p = new DatagramPacket(byteArray, byteArray.length, androidInetAddress, ExpiryChecker.androidPort);
 
 		//try to send the packet
 		try{
@@ -293,7 +297,7 @@ class ReaderClass extends Thread{
 		fridgeServerReader.start();
 		Thread expiryChecker = new Thread(new ExpiryChecker(database));
 		expiryChecker.start();
-		Thread udpListener = new Thread(new UDPListener(r));
+		Thread udpListener = new Thread(new UDPListener(r, database));
 		udpListener.start();
 	}
 

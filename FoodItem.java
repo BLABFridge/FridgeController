@@ -16,7 +16,6 @@ class FoodItem{
 	private ArrayList<Float> warningTimes = new ArrayList(); //warningTimes will be the length of warningExpiryToLifetimeRatio.length
 
 	public static final float[] warningExpiryToLifetimeRatio = {1, (float)0.5, (float)0.14, (float)0.07, (float).047};
-	
 
 
 	public FoodItem(char[] tagCode, String name){
@@ -54,6 +53,12 @@ class FoodItem{
 		String[] strings = splittableString.split(matchRegexOpcodeDelimiter);
 
 		return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2])); //using packet format, the first is the opcode (ignored), second is name, third is lifetime
+	}
+
+	public byte[] to1Packet(){
+		byte[] buf = new byte[100];
+		buf[0] = '1';
+		buf[1] = opcodeDelimiter.getBytes()[0];
 	}
 
 	public float expiresInDays(){
