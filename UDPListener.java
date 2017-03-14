@@ -35,16 +35,19 @@ class UDPListener extends Thread {
 		}
 
 		switch(buf[0]) {
-			case '8' : //currently the only case
+			case '8' :
 				String[] strings = new String(buf).split(FoodItem.matchRegexOpcodeDelimiter);
+				ReaderClass.println("Android has requested we enter adding mode");
 				if (strings.length > 2){
 					reader.enterAddingMode(Integer.parseInt(strings[1])); //if there's more than 2 items (opcode, number, padding), add the second (the number) as a timeout
+					ReaderClass.println("Android has changed the addingMode timeout to " + Integer.parseInt(strings[1]));
 				} else {
 					reader.enterAddingMode();
 				}
 				break;
 			case '9' : //dump all the foodItems in the database that expire before the stated day.
 				int date = Integer.parseInt(ReaderClass.getStringFromByteArray(buf, 1));
+				ReaderClass.println("Android has requested a dump of all items expiring before " + date);
 				for (int i = 0; i < d.size(); ++i) {
 					FoodItem checkItem = (FoodItem) d.get(i);
 					if (checkItem.expiresInDays() <= date){ //it expires before or on this date
