@@ -3,6 +3,7 @@ import java.net.*;
 import java.io.IOException;
 import java.util.Date;
 import java.lang.Integer;
+import java.util.Arrays;
 
 //this class (thread) listens on a specific port (1111) for anything that the android/database might send to us without a prior prompt
 
@@ -13,13 +14,8 @@ class UDPListener extends Thread {
 	public static final int UDP_LISTENER_PORT = 1111;
 	private Database d;
 
-	public static byte[] makeByteArrayFromFoodItem(FoodItem i){
-		byte[] buf = new byte[98];
-		System.arraycopy(i.getName)
-	}
-
 	public UDPListener(ReaderClass r, Database db){
-		d = db
+		d = db;
 		try{
 			listenerSocket = new DatagramSocket(UDP_LISTENER_PORT);
 		} catch (IOException e){
@@ -48,13 +44,28 @@ class UDPListener extends Thread {
 				}
 				break;
 			case '9' : //dump all the foodItems in the database that expire before the stated day.
-				int date = Integer.parseInt(ReaderClass.getFoodItemFromByteArray(buf, 1));
+				int date = Integer.parseInt(ReaderClass.getStringFromByteArray(buf, 1));
 				for (int i = 0; i < d.size(); ++i) {
-					FoodItem checkItem = d.get(i);
+					FoodItem checkItem = (FoodItem) d.get(i);
 					if (checkItem.expiresInDays() <= date){ //it expires before or on this date
-
+						p.setData(checkItem.to1Packet()); //generate and send the packet
+						try{
+							listenerSocket.send(p);
+						} catch (IOException e){
+							ReaderClass.println("Error sending a UDP packet");
+						}
 					}
 				}
+				Arrays.fill(buf, (byte)0); //we're done, generate and send an empty packet
+				buf[0] = '1';
+				buf[1] = FoodItem.opcodeDelimiter.getBytes()[0];
+				p.setData(buf);
+				try{
+					listenerSocket.send(p);
+				} catch (IOException e){
+					ReaderClass.println("Error sending a UDP packet");
+				}
+				break;
 			default: break;
 		}
 	}

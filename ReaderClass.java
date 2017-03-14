@@ -48,7 +48,7 @@ class ReaderClass extends Thread{
 
 	static String getStringFromByteArray(byte[] arr, int indexOfString){
 		String s = new String(arr);
-		String[] strings = s.split(UDPListener.packetDelimeterMatchRegex);
+		String[] strings = s.split(FoodItem.matchRegexOpcodeDelimiter);
 		return strings[indexOfString];
 	}
 

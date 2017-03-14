@@ -59,6 +59,13 @@ class FoodItem{
 		byte[] buf = new byte[100];
 		buf[0] = '1';
 		buf[1] = opcodeDelimiter.getBytes()[0];
+		byte[] nameAsBytes = itemName.getBytes();
+		System.arraycopy(nameAsBytes, 0, buf, 2, nameAsBytes.length);
+		buf[2 + nameAsBytes.length] = opcodeDelimiter.getBytes()[0];
+		byte[] lifetimeAsBytes = Integer.toString(Math.round(lifetime)).getBytes();
+		System.arraycopy(lifetimeAsBytes, 0, buf, 2 + 1 + nameAsBytes.length, lifetimeAsBytes.length);
+		buf[2+1+lifetimeAsBytes.length + nameAsBytes.length] = opcodeDelimiter.getBytes()[0];
+		return buf;
 	}
 
 	public float expiresInDays(){
