@@ -9,7 +9,7 @@ Note - [0] is the delimeter used between items in packets. Currently, '?' is bei
 It is assumed that all packets end in a delimiter
 
 ###Installation
-the install script should take care of putting things where they need to be. Testing should be done on blank systems (since I have trash everywhere from testing).
+The install script should take care of putting things where they need to be. Testing should be done on blank systems (since I have trash everywhere from testing).
 
 ###Init.d Service
 After installation, the system can be started with `service fridgeController start`. Stopping the service is implemented but untested
@@ -30,7 +30,7 @@ Multiple FoodItems will be warned once, for the first found FoodItem of that typ
 
 0 - Request FoodItem : Request a returned foodItem from the database
 #####Format
-	0[0][hashcode - 10 bytes][padding to 100 bytes]
+	0[0][hashcode - 10 bytes][0][padding to 100 bytes]
 
 1 - FoodItem Returned : This packet contains the requested FoodItem
 #####Format
