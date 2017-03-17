@@ -9,12 +9,15 @@ Note - [0] is the delimeter used between items in packets. Currently, '?' is bei
 It is assumed that all packets end in a delimiter
 
 ###Installation
+
 The install script should take care of putting things where they need to be. Testing should be done on blank systems (since I have trash everywhere from testing).
 
 ###Init.d Service
+
 After installation, the system can be started with `service fridgeController start`. Stopping the service is implemented but untested
 
 ###AddingMode
+
 AddingMode is a mode used to add duplicate FoodItems to the fridge. There is no way to determine if an apple is being removed from the fridge, or a new one added. This is what addingMode is for.
 
 If an item is scanned, and it is not already in the fridge, addingMode will be entered until the timeout (currently 30 seconds).
