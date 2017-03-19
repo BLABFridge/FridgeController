@@ -47,8 +47,13 @@ class UDPListener extends Thread {
 				break;
 			case '9' : //dump all the foodItems in the database that expire before the stated day.
 				int date = Integer.parseInt(ReaderClass.getStringFromByteArray(buf, 1));
-				ReaderClass.println("Android has requested a dump of all items expiring before " + date);
-				for (int i = 0; i < d.size(); ++i) {
+				if (date == 0){
+					ReaderClass.println("Android has requested a dump of all items");
+					date = Integer.MAX_VALUE; //nothing can (realistically) expire 2.14 billion days from now, so this should dump all the food items
+				} else {
+					ReaderClass.println("Android has requested a dump of all items expiring before " + date);
+				}
+				for (int i = 0; i < d.size(); ++i) { //this loop always runs, the condition is just always met if date was zero and is now MAX_INT
 					FoodItem checkItem = (FoodItem) d.get(i);
 					if (checkItem.expiresInDays() <= date){ //it expires before or on this date
 						p.setData(checkItem.to1Packet()); //generate and send the packet
