@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ $EUID != 0 ]; then
+	gksu "$0" "$?"
+	exit "$?"
+fi
+
+
+rm -r /var/run/RFID_FIFO
+
+mkfifo /var/run/RFID_FIFO
+
+echo "FIFO is up, starting java ReaderClass"
+
+pushd ..
+
+java ReaderClass &
+
+popd
+
+sleep 2
+
+nc -ul 4001 > databaseFile &
+nc -ul 1078 > androidFile &
+
+while IFS=' ' read -r line || [[ -n "$line" ]]; do
+	echo "Read tagcode $line from file"
+	echo $line > /var/run/RFID_FIFO
+done < rfidTagCodeFile
+
+sleep 2
+
+echo "here"
+while IFS=' ' read -r line || [[ -n "$line" ]]; do
+	echo "The database received $line"
+done < databaseFile
+
+sleep 70
+
+while IFS=' ' read -r line || [[ -n "$line" ]]; do
+	echo "The android app received $line"
+done < androidFile 

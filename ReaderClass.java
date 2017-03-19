@@ -26,7 +26,7 @@ class ReaderClass extends Thread{
 	public static final int datagramLength = 100;
 
 	public static final String fifoName = "/var/run/RFID_FIFO";
-	public static final String remoteDatabaseInetAddressString = "10.0.0.5"; //set this appropriately
+	public static final String remoteDatabaseInetAddressString = "127.0.0.1"; //set this appropriately
 	public static final int remoteDatabasePort = 4001;
 	public static final int TAGCODE_LENGTH = 10;
 
