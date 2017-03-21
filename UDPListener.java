@@ -65,7 +65,7 @@ class UDPListener extends Thread {
 					}
 				}
 				Arrays.fill(buf, (byte)0); //we're done, generate and send an empty packet
-				buf[0] = '1';
+				buf[0] = '9';
 				buf[1] = FoodItem.opcodeDelimiter.getBytes()[0];
 				p.setData(buf);
 				try{

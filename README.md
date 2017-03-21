@@ -61,14 +61,14 @@ Create a new notification containing the given string, used when food items are 
 	5[0][String notificationString][0][padding to 100 bytes]
 
 ### 6 - FoodItem does not exist
-When the scanned item does not exist in the database, the phone will be notified to enter item if desired, generally responded to by a 7 packet
+When the scanned item does not exist in the database, the phone will be notified to enter item if desired, generally responded to by a 1 packet
 
 	6[0][String missingTagCode][0][padding to 100 bytes]
 
 ### 1 - FoodItem Returned
 Generally in response to a 6 packet, identical to above
 
-	7[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
+	1[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
 
 ### 8 - Enter adding mode
 Sent to the listener from the android app to automatically enter adding mode
@@ -76,7 +76,7 @@ Sent to the listener from the android app to automatically enter adding mode
 	8[0][Optional timeout][0][padding to 100 bytes]
 
 ### 9 - Dump Expires Before
-Sends a stream of 7 packets containing FoodItems that expire before 'Day' to whoever sent the 9 packet, terminated by a blank 7 packet (none will result in a single, blank 7 packet). 
+Sends a stream of 1 packets containing FoodItems that expire before 'Day' to whoever sent the 9 packet, terminated by a blank 9 packet (none will result in a single, blank 9 packet). 
 If 'Day' is zero, it will be set to MAX_INT and used as a check, this will dump all items in the fridge, except possibly for universes that aren't dying soon (>5.8 million years)
 
 	9[0][Day][0]
