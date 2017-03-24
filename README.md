@@ -39,7 +39,7 @@ Request a returned foodItem from the database
 ### 1 - FoodItem Returned
 This packet contains the requested FoodItem
 
-	1[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
+	1[0][String FoodItem name][0][String lifetimeInDays][0][String daysFromNow(optional)][0][padding to 100 bytes]
 
 ### 2 - FoodItem not in Database
 Sent when the database does not contain the requested hashcode
@@ -68,7 +68,7 @@ When the scanned item does not exist in the database, the phone will be notified
 ### 1 - FoodItem Returned
 Generally in response to a 6 packet, identical to above
 
-	1[0][String FoodItem name][0][String lifetimeInDays][0][padding to 100 bytes]
+	1[0][String FoodItem name][0][String lifetimeInDays][0][String daysFromNow(optional)][0][padding to 100 bytes]
 
 ### 8 - Enter adding mode
 Sent to the listener from the android app to automatically enter adding mode
