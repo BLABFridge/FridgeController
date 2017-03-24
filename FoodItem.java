@@ -9,9 +9,10 @@ class FoodItem{
 
 	public static final String matchRegexOpcodeDelimiter = "\\?";
 	public static final String opcodeDelimiter = "?";
+	public static final int TAGCODE_LENGTH = 10;
 
 	private String itemName; 
-	public char[] tagCode;
+	private char[] tagCode;
 	private ComparableDate expiryDate;
 	private float lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
 	private ArrayList<Float> warningTimes = new ArrayList(); //warningTimes will be the length of warningExpiryToLifetimeRatio.length
@@ -24,8 +25,8 @@ class FoodItem{
 		this(tagCode, name, 1); //default lifetime of 1 day
 	}
 
-	public FoodItem(char[] tagCode, String name, float lifetime){
-		this.tagCode = tagCode;
+	private FoodItem(char[] tagCode, String name, float lifetime, ComparableDate expiryDate){
+		this.tagCode = tagCode.clone();
 		expiryDate = null;
 		itemName = name;
 		this.lifetime = lifetime;
@@ -34,9 +35,13 @@ class FoodItem{
 		}
 	}
 
+	public FoodItem(char[] tagCode, String name, float lifetime){
+		this(tagCode, name, lifetime, null);
+	}
+
 	public FoodItem(FoodItem anotherFoodItem){
 		this.itemName = new String(anotherFoodItem.itemName);
-		for (int i = 0; i < ReaderClass.TAGCODE_LENGTH; ++i) {
+		for (int i = 0; i < TAGCODE_LENGTH; ++i) {
 			this.tagCode[i] = anotherFoodItem.tagCode[i];
 		}
 		this.lifetime = anotherFoodItem.lifetime;
@@ -45,7 +50,7 @@ class FoodItem{
 	}
 
 	public FoodItem(char[] tagCode){ //DO NOT USE FOODITEMS CREATED WITH THIS METHOD, THIS IS ONY FOR EQUALS
-		this.tagCode = tagCode;
+		this.tagCode = tagCode.clone();
 	}
 
 	public static FoodItem getFoodItemFromByteArray(char[] tagCode, byte[] bytes){
@@ -54,6 +59,9 @@ class FoodItem{
 		// System.out.println("Splitting " + t);
 		String[] strings = splittableString.split(matchRegexOpcodeDelimiter);
 
+		if(strings.length > 3){
+			return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2]), new ComparableDate(Integer.parseInt(strings[3])));
+		}
 		return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2])); //using packet format, the first is the opcode (ignored), second is name, third is lifetime
 	}
 
@@ -72,6 +80,10 @@ class FoodItem{
 
 	public float expiresInDays(){
 		return (expiryDate.daysUntil());
+	}
+
+	public char[] getTagCode(){
+		return tagCode;
 	}
 
 	public float expiresInHours(){
@@ -118,11 +130,12 @@ class FoodItem{
 	public boolean equals(Object o){ //this equals method does not compare all fields, it returns true if the tagcodes match, to comply with stupid java's dumbass symmetry shit. It violates so many design rules to comply with one stupid design rule. java is dumb.
 		if (o instanceof FoodItem){
 			FoodItem i = (FoodItem) o;
-			for(int j = 0; j < this.tagCode.length; ++j){
-				ReaderClass.println("" + (this.tagCode[j] == i.tagCode[j]) + " " + this.tagCode[j] + ":" + i.tagCode[j]);
-				if (tagCode[j] != i.tagCode[j]) return false;
-			}
-			return true;
+			if (new String(this.tagCode).equals(new String(i.getTagCode()))) return true;
+			// for(int j = 0; j < this.tagCode.length; ++j){
+			// 	ReaderClass.println("" + (this.tagCode[j] == i.tagCode[j]) + " " + this.tagCode[j] + ":" + i.tagCode[j]);
+			// 	if (tagCode[j] != i.tagCode[j]) return false;
+			// }
+			// return true;
 		}
 		// } else if (o instanceof String){ //this is a bit of a hack so that the linkedList can be searched by just a tagCode. Done because a hashTable cannot have duplicates
 		// 	ReaderClass.println("Checking tag code in fooditem equals method : " + (String) o + "compared with" + new String(tagCode)); //DEBUG
