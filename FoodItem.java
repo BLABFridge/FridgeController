@@ -27,12 +27,12 @@ class FoodItem{
 
 	private FoodItem(char[] tagCode, String name, float lifetime, ComparableDate expiryDate){
 		this.tagCode = tagCode.clone();
-		expiryDate = null;
 		itemName = name;
 		this.lifetime = lifetime;
 		for (int i = 0; i < warningExpiryToLifetimeRatio.length; ++i) {
 			warningTimes.add(24 * lifetime * warningExpiryToLifetimeRatio[i]);
 		}
+		this.expiryDate = expiryDate;
 	}
 
 	public FoodItem(char[] tagCode, String name, float lifetime){
@@ -59,7 +59,7 @@ class FoodItem{
 		// System.out.println("Splitting " + t);
 		String[] strings = splittableString.split(matchRegexOpcodeDelimiter);
 
-		if(strings.length > 3){
+		if(strings.length > 5){
 			return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2]), new ComparableDate(Integer.parseInt(strings[3])));
 		}
 		return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2])); //using packet format, the first is the opcode (ignored), second is name, third is lifetime

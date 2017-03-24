@@ -24,7 +24,6 @@ class Database<T> {
 	public int indexOf(T t){
 		for (int i = 0; i < items.size() ; ++i) {
 			T o = items.get(i);
-			ReaderClass.println("Comparing " + items.get(i).toString());
 			if(items.get(i).equals(t)) return i;
 		}
 		return -1;

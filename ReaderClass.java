@@ -150,7 +150,6 @@ class ReaderClass extends Thread{
 
 			FoodItem iToAdd = null;
 			int index = db.indexOf(new FoodItem(tagCodeCharArray));
-			println("index is " + index);
 				
 			//either scenario creates an iToAdd
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already
@@ -160,7 +159,7 @@ class ReaderClass extends Thread{
 				addingMode = true;
 				println("Switching to adding mode");
 			} else { //the item is in the fridge, remove it if we're not in adding mode, add it again if we are
-				println("Item found in local database : ");
+				println("Item found in local database - figuring out what to do");
 				if(addingMode){
 					println("In grocery mode, adding a duplicate");
 					Object t = db.get(index);

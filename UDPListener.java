@@ -35,6 +35,12 @@ class UDPListener extends Thread {
 		}
 
 		switch(buf[0]) {
+			case '4' : try{
+				listenerSocket.send(p);
+			} catch(IOException e){
+				ReaderClass.println("Error sending ping");
+			}
+			break;
 			case '8' :
 				String[] strings = new String(buf).split(FoodItem.matchRegexOpcodeDelimiter);
 				ReaderClass.println("Android has requested we enter adding mode");
