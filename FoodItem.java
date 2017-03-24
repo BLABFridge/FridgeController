@@ -58,8 +58,7 @@ class FoodItem{
 		String splittableString = new String(bytes);
 		// System.out.println("Splitting " + t);
 		String[] strings = splittableString.split(matchRegexOpcodeDelimiter);
-
-		if(strings.length > 5){
+		if(strings.length > 4){
 			return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2]), new ComparableDate(Integer.parseInt(strings[3])));
 		}
 		return new FoodItem(tagCode, strings[1], Integer.parseInt(strings[2])); //using packet format, the first is the opcode (ignored), second is name, third is lifetime
@@ -75,6 +74,9 @@ class FoodItem{
 		byte[] lifetimeAsBytes = Integer.toString(Math.round(lifetime)).getBytes();
 		System.arraycopy(lifetimeAsBytes, 0, buf, 2 + 1 + nameAsBytes.length, lifetimeAsBytes.length);
 		buf[2+1+lifetimeAsBytes.length + nameAsBytes.length] = opcodeDelimiter.getBytes()[0];
+		byte[] expiryDateInDaysAsBytes = Integer.toString(Math.round(expiryDate.daysUntil())).getBytes();
+		System.arraycopy(expiryDateInDaysAsBytes, 0, buf, 2+1+nameAsBytes.length + lifetimeAsBytes.length + 1, expiryDateInDaysAsBytes.length);
+		buf[2+1+nameAsBytes.length + lifetimeAsBytes.length + 1 + 1] = opcodeDelimiter.getBytes()[0];
 		return buf;
 	}
 

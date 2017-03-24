@@ -199,6 +199,7 @@ class ReaderClass extends Thread{
 			println("DatagramSocket error while attempting to send packet");
 		}
 
+		p = new DatagramPacket(new byte[100], 100);
 		//wait for the database to respond
 		try{
 			databaseRequestSocket.receive(p); //we don't need p anymore, we can reuse it
@@ -224,7 +225,7 @@ class ReaderClass extends Thread{
 			}
 		} else if(byteArray[0] == '1') { //the database responded correctly
 			println("Database response received, processing"); //DEBUG/verbose/log?
-			println("Database responded with " + new String(byteArray)); //DEBUG
+			println("Database responded with " + new String(byteArray) + " of length " + byteArray.length); //DEBUG
 			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);
 		} else { //the database responded incorrectly
 			println("The database responded incorrectly to a FoodItem request");

@@ -16,7 +16,7 @@ class ExpiryChecker implements Runnable {
 	private DatagramSocket socket;
 
 
-	public static final String androidInetAddressString = "10.0.0.5";
+	public static final String androidInetAddressString = "127.0.0.1";
 	public static final int androidPort = 1078;
 
 	public ExpiryChecker(Database db){
