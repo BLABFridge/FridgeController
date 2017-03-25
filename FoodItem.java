@@ -3,6 +3,7 @@ On creation of a food item, renewExpiryDate() must be called, otherwise expiryDa
 */
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 class FoodItem{
 
@@ -14,6 +15,7 @@ class FoodItem{
 	private ComparableDate expiryDate;
 	private float lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
 	private ArrayList<Float> warningTimes = new ArrayList(); //warningTimes will be the length of warningExpiryToLifetimeRatio.length
+	private LocalDateTime dateAdded;
 
 	public static final float[] warningExpiryToLifetimeRatio = {1, (float)0.5, (float)0.14, (float)0.07, (float).047};
 
@@ -76,13 +78,21 @@ class FoodItem{
 		return (expiryDate.hoursUntil());
 	}
 
+	public LocalDateTime expiresOn(){
+		return (LocalDateTime.now()).plusHours(Math.round(expiresInHours()));
+	}
+
+	public LocalDateTime getDateAdded(){
+		return dateAdded;
+	}
+
 	public float getExpiryToLifetimeRatio(){
 		return (expiresInDays()/lifetime);
 	}
 
 	public void renewExpiryDate(){ //this is considered a secondary constructor, the only reason it isn't in the constructor is so that expiryDate can be renewed at the 'time of entry'
 		expiryDate = new ComparableDate(lifetime); //this should be called when the item is put in the fridge.
-
+		dateAdded = LocalDateTime.now();
 	}
 
 	public boolean needsWarning(){
@@ -125,5 +135,7 @@ class FoodItem{
 	public String getName(){
 		return itemName;
 	}
+
+
 
 }
