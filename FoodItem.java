@@ -11,7 +11,7 @@ class FoodItem{
 	public static final String opcodeDelimiter = "?";
 
 	private String itemName; 
-	private char[] tagCode;
+	public char[] tagCode;
 	private ComparableDate expiryDate;
 	private float lifetime; //the expiry date is set to [lifetime] days from now when the item is put in the fridge
 	private ArrayList<Float> warningTimes = new ArrayList(); //warningTimes will be the length of warningExpiryToLifetimeRatio.length
@@ -118,7 +118,11 @@ class FoodItem{
 	public boolean equals(Object o){ //this equals method does not compare all fields, it returns true if the tagcodes match, to comply with stupid java's dumbass symmetry shit. It violates so many design rules to comply with one stupid design rule. java is dumb.
 		if (o instanceof FoodItem){
 			FoodItem i = (FoodItem) o;
-			return (this.tagCode.equals(i.tagCode));
+			for(int j = 0; j < this.tagCode.length; ++j){
+				ReaderClass.println("" + (this.tagCode[j] == i.tagCode[j]) + " " + this.tagCode[j] + ":" + i.tagCode[j]);
+				if (tagCode[j] != i.tagCode[j]) return false;
+			}
+			return true;
 		}
 		// } else if (o instanceof String){ //this is a bit of a hack so that the linkedList can be searched by just a tagCode. Done because a hashTable cannot have duplicates
 		// 	ReaderClass.println("Checking tag code in fooditem equals method : " + (String) o + "compared with" + new String(tagCode)); //DEBUG

@@ -135,7 +135,7 @@ class ReaderClass extends Thread{
 		while(true){
 			try{
 				fifoReader.read(tagCodeCharArray, 0, tagCodeCharArray.length);
-				println("Input from RFID_FIFO");
+				println("Input from RFID_FIFO" + new String(tagCodeCharArray));
 				if (System.currentTimeMillis() - timeLastAdded > 30000){ //it's been more than 30 since the last time something was added
 					addingMode = false;	//no longer in adding mode
 					println("Leaving adding mode");
@@ -149,7 +149,9 @@ class ReaderClass extends Thread{
 			// tagCodeCharArray = tagCode.getBytes();
 
 			FoodItem iToAdd = null;
-			int index = db.indexOf(new FoodItem(tagCodeCharArray));
+			int index = 0;
+			index = db.indexOf(new FoodItem(tagCodeCharArray));
+			println("index is " + index);
 				
 			//either scenario creates an iToAdd
 			if (index == -1){ //the item isn't in the database, fetch it and add it, enter adding mode if we aren't already

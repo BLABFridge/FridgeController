@@ -22,7 +22,11 @@ class Database<T> {
 	}
 
 	public int indexOf(T t){
-		return items.indexOf(t);	
+		for (int i = 0; i < items.size() ; ++i) {
+			ReaderClass.println(items.get(i).equals(t) + "");
+			if(items.get(i).equals(t)) return i;
+		}
+		return -1;
 	}
 
 	public synchronized void remove(T t){
