@@ -234,7 +234,7 @@ class ReaderClass extends Thread{
 	}
 
 	public FoodItem sendnotContainedToAndroid(char[] tagCode){
-		
+
 		byte[] tagCodeAsBytes = charArrayToByteArray(tagCode);
 
 		byte opcode = '6';
@@ -250,24 +250,42 @@ class ReaderClass extends Thread{
 			println("DatagramSocket error while attempting to send packet");
 		}
 
+
 		try{
 			androidCommSocket.receive(p);
 		} catch (SocketTimeoutException e){
-			println("Android did not respond");			
+			println("Android did not respond");
 			return null;
 		} catch (IOException e){
 			println("IO exception sending on androidCommSocket");
 			return null;
 		}
-
+		println("Packet received from android - parsing");
 		byteArray = p.getData();
 
-		if (byteArray[0] == '7'){
+		if (byteArray[0] == '1'){
+			addFoodItemToDatabase(FoodItem.getFoodItemFromByteArray(tagCode, byteArray));
 			return FoodItem.getFoodItemFromByteArray(tagCode, byteArray);
 		} else{
 			return null;
 		}
 
+	}
+
+	public void addFoodItemToDatabase(FoodItem f){
+		byte[] buf = f.to1Packet();
+		int byteCrawler = 0;
+		for(int countDownCounter = 3; countDownCounter > 0; byteCrawler++){
+			if (buf[byteCrawler] == FoodItem.opcodeDelimiter.getBytes()[0]) countDownCounter--;
+		}
+		System.arraycopy(charArrayToByteArray(f.getTagCode()), 0, buf, byteCrawler, f.getTagCode().length);
+
+		try{
+			databaseRequestSocket.send(new DatagramPacket(buf, buf.length, remoteDatabaseInetAddress, remoteDatabasePort));
+			println("New food item added to the remote database records");
+		} catch(IOException e){
+			println("Error sending add packet to database");
+		}
 	}
 
 
@@ -287,10 +305,6 @@ class ReaderClass extends Thread{
 		println("Java server running");
 
 		Database<FoodItem> database = new Database<FoodItem>();
-
-		FoodItem f = new FoodItem("testCode".toCharArray(), "testItem",(float) 0.001);
-		f.renewExpiryDate();
-		database.add(f);
 
 		ReaderClass r = new ReaderClass(database);
 

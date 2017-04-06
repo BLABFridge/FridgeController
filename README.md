@@ -80,3 +80,15 @@ Sends a stream of 1 packets containing FoodItems that expire before 'Day' to who
 If 'Day' is zero, it will be set to MAX_INT and used as a check, this will dump all items in the fridge, except possibly for universes that aren't dying soon (>5.8 million years)
 
 	9[0][Day][0]
+
+## Opcodes for talking to server
+YET TO BE IMPLEMENTED
+
+### 'c' - Run command
+This is used for running commands on the server, commands are space delimited strings that specify an action and arguments.
+
+	c[0][space delimited command][0]
+
+For example, to set the android ip address to 197.17.210.222, the command would be:
+
+	c[0]set android ip 197.17.210.222

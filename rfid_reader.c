@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
 		printf("trying to open fifo\n");
 		fifo_fd = open(fifoName, O_WRONLY);
 		if (fifo_fd !=0){
-			printf("error opening FIFO\n");
+			printf("possible error opening FIFO - open returned %d\n", fifo_fd);
 		}
 		printf("Serial port setup, waiting on tag read\n");
 
@@ -93,10 +93,10 @@ int main(int argc, char const *argv[])
 		arrayCopy(buf, tagCode, 1, 12);
 
 		int i;
-		for (i = 0; i < RFID_TAGCODE_LENGTH; ++i){
-			printf("%x", tagCode[i]);
-		}
-		printf("\n");
+		// for (i = 0; i < RFID_TAGCODE_LENGTH; ++i){
+		// 	printf("%x", tagCode[i]);
+		// } FROM TESTING
+		// printf("\n");
 
 		write(fifo_fd, tagCode, sizeof(tagCode));
 		n = read(sport_fd, buf, sizeof(buf));
