@@ -42,6 +42,9 @@ class ReaderClass extends Thread{
 	private DatagramSocket androidCommSocket;
 
 
+	/*The println method is overridden because we want to write to files
+	this could (should) be refactored into a singleton logger class, but for now, this works.
+	The main starts by redirecting standard out to /var/log/fridgeServerLogs.log */
 	public static void println(String s){
 		System.out.println(new Date() + " - " + s);
 	}
@@ -55,7 +58,7 @@ class ReaderClass extends Thread{
 
 	public ReaderClass(Database<FoodItem> d){
 		db = d;
-		try{ //DEBUG port is 1112
+		try{ 
 			databaseRequestSocket = new DatagramSocket(); //no port specified, we are always sending to the database first, so the database can learn our port
 			databaseRequestSocket.setSoTimeout(200000); //the database has 20 seconds to respond to a request
 			androidCommSocket = new DatagramSocket();
@@ -97,14 +100,6 @@ class ReaderClass extends Thread{
 
 	}
 
-	public byte[] charArrayToByteArray(char[] cArr){
-		byte[] bytes = new byte[cArr.length];
-		for(int i = 0; i < cArr.length; ++i){
-			bytes[i] = (byte)(cArr[i]);
-		}
-		return bytes;
-	}
-
 	// public byte[] makeByteArray(byte opcode, byte[] arg1, byte[] arg2){
 	// 	//create the byte array
 	// 	byte[] byteArray = new byte[datagramLength];
@@ -114,6 +109,14 @@ class ReaderClass extends Thread{
 	// 	byteArray[tagCodeAsBytes.length + 2] = FoodItem.opcodeDelimiter.getBytes()[0];
 
 	// }
+
+	public byte[] charArrayToByteArray(char[] cArr){
+		byte[] bytes = new byte[cArr.length];
+		for(int i = 0; i < cArr.length; ++i){
+			bytes[i] = (byte)(cArr[i]);
+		}
+		return bytes;
+	}
 
 	public void enterAddingMode(int newTimeout){
 		addingMode = true;
@@ -125,10 +128,6 @@ class ReaderClass extends Thread{
 		timeLastAdded = System.currentTimeMillis();
 
 		BufferedReader fifoReader = makeBufferedReader();
-		// try{
-		// }catch(IOException e){
-		// 	return; //even more bad things			
-		// }
 		char[] tagCodeCharArray = new char[TAGCODE_LENGTH];
 		String tagCode = null;
 
@@ -142,8 +141,8 @@ class ReaderClass extends Thread{
 				}
 //				fifoReader = makeBufferedReader(fifoReader);
 			} catch (IOException e){
+				println("IO exception reading from the bufferedReader");
 				return;
-				//////OH NO BAD THINGS AAAAAAAHHHH
 			}
 
 			// tagCodeCharArray = tagCode.getBytes();
@@ -183,6 +182,8 @@ class ReaderClass extends Thread{
 		}
 	}
 
+
+	//tries really hard to return a foodItem, but returns null if the user really,really doesn't want to put something in, even though they scanned something (Users are stupid, right?)
 	public FoodItem getItemFromRemoteDatabase(char[] tagCode){
 		byte[] tagCodeAsBytes = charArrayToByteArray(tagCode);
 
@@ -232,7 +233,8 @@ class ReaderClass extends Thread{
 			return null;
 		}
 	}
-
+//
+	//Called when the database doesn't contain an item, gets input from the user about a new food item
 	public FoodItem sendnotContainedToAndroid(char[] tagCode){
 
 		byte[] tagCodeAsBytes = charArrayToByteArray(tagCode);
@@ -297,7 +299,7 @@ class ReaderClass extends Thread{
 		try{
 			oStream = new PrintStream(logFile); //true for appending
 		} catch (FileNotFoundException e){
-			println("File Not found");
+			println("Issue connecting to /var/log/fridgeServerLogs.log - was it deleted?");
 		}
 
 		System.setOut(oStream);
